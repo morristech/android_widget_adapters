@@ -21,9 +21,10 @@
  */
 android {
     sourceSets {
-        main.manifest.srcFile 'src/main/AndroidManifest.xml'
+        main.manifest.srcFile 'src/list/AndroidManifest.xml'
         main.java.srcDirs = [
-                'src/main/java'
+                'src/list/base/java',
+                'src/list/simple/java'
         ]
     }
 }
@@ -32,5 +33,5 @@ android {
  * Library Module dependencies =====================================================================
  */
 dependencies {
-    // None.
+    compile 'universum.studios.android:adapters-core:1.0.0@aar'
 }

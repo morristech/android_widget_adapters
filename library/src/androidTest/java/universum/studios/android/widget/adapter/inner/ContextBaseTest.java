@@ -16,21 +16,23 @@
  * See the License for the specific language governing permissions and limitations under the License.
  * =================================================================================================
  */
-/**
- * Library Module options ==========================================================================
- */
-android {
-    sourceSets {
-        main.manifest.srcFile 'src/main/AndroidManifest.xml'
-        main.java.srcDirs = [
-                'src/main/java'
-        ]
-    }
-}
+package universum.studios.android.widget.adapter.inner;
+
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
 
 /**
- * Library Module dependencies =====================================================================
+ * @author Martin Albedinsky
  */
-dependencies {
-    // None.
+public abstract class ContextBaseTest extends BaseTest {
+
+	@SuppressWarnings("unused")
+	private static final String TAG = "ContextBaseTest";
+
+	protected Context mContext;
+
+	@Override
+	public void beforeTest() throws Exception {
+		this.mContext = InstrumentationRegistry.getTargetContext();
+	}
 }

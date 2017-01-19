@@ -24,8 +24,16 @@ android {
         main.manifest.srcFile 'src/main/AndroidManifest.xml'
         main.java.srcDirs = [
                 'src/main/java',
-                'src/common/java',
-                'src/collection/java'
+                'src/list/base/java',
+                'src/list/simple/java',
+                'src/spinner/base/java',
+                'src/spinner/simple/java',
+                'src/recycler/base/java',
+                'src/recycler/simple/java',
+                'src/module/core/java',
+                'src/module/header/java',
+                'src/module/selection/java',
+                'src/wrapper/java'
         ]
     }
 }
@@ -34,5 +42,6 @@ android {
  * Library Module dependencies =====================================================================
  */
 dependencies {
-    // None.
+    final String supportVersion = project.property('android.support.version')
+    compile 'com.android.support:recyclerview-v7:' + supportVersion
 }

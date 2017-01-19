@@ -17,20 +17,6 @@
  * =================================================================================================
  */
 /**
- * Library Module options ==========================================================================
+ * @author Martin Albedinsky
  */
-android {
-    sourceSets {
-        main.manifest.srcFile 'src/main/AndroidManifest.xml'
-        main.java.srcDirs = [
-                'src/main/java'
-        ]
-    }
-}
-
-/**
- * Library Module dependencies =====================================================================
- */
-dependencies {
-    // None.
-}
+package universum.studios.android.widget.adapter.wrapper;

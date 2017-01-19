@@ -16,21 +16,23 @@
  * See the License for the specific language governing permissions and limitations under the License.
  * =================================================================================================
  */
-/**
- * Library Module options ==========================================================================
- */
-android {
-    sourceSets {
-        main.manifest.srcFile 'src/main/AndroidManifest.xml'
-        main.java.srcDirs = [
-                'src/main/java'
-        ]
-    }
-}
+package universum.studios.android.widget.adapter.inner;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
 
 /**
- * Library Module dependencies =====================================================================
+ * @author Martin Albedinsky
  */
-dependencies {
-    // None.
+public final class TestActivity extends Activity {
+
+	@SuppressWarnings("unused")
+	private static final String TAG = "TestActivity";
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(new View(this));
+	}
 }

@@ -17,20 +17,10 @@
  * =================================================================================================
  */
 /**
- * Library Module options ==========================================================================
+ * Provides adapter module implementations that may be used within context of a specific adapter.
+ * Each of these modules encapsulates a specific logic, for example {@link universum.studios.android.widget.adapter.module.SelectionModule}
+ * may be used to support <b>items selection logic</b> for a particular adapter.
+ *
+ * @author Martin Albedinsky
  */
-android {
-    sourceSets {
-        main.manifest.srcFile 'src/main/AndroidManifest.xml'
-        main.java.srcDirs = [
-                'src/main/java'
-        ]
-    }
-}
-
-/**
- * Library Module dependencies =====================================================================
- */
-dependencies {
-    // None.
-}
+package universum.studios.android.widget.adapter.module;
