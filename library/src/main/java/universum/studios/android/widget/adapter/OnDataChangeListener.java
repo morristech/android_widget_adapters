@@ -18,18 +18,17 @@
  */
 package universum.studios.android.widget.adapter;
 
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
- * Listener which receives callbacks that may be used to listen for events before and after cursor
- * change or to intercept cursor change event for a specific adapter.
+ * Listener which receives callbacks that may be used to listen for events before and after data
+ * change for a specific adapter.
  * <p>
  * This listener may be useful for example when there need to be saved and restored current scroll
- * position of a collection view for which a specific adapter provides its cursor data set. Then in
- * such scenario we can save the current scroll position in {@link #onDataChange(Object, Cursor)}
- * and restore it in {@link #onDataChanged(Object, Cursor)}.
+ * position of a collection view for which a specific adapter provides its data set. Then in such
+ * scenario we can save the current scroll position in {@link #onDataChange(Object, Object)} and
+ * restore it in {@link #onDataChanged(Object, Object)}.
  * <p>
  * Both these callbacks should be guarantied to be called by the associated adapter if this listener
  * is attached to it.
@@ -40,23 +39,23 @@ import android.support.annotation.Nullable;
 public interface OnDataChangeListener<Adapter, Data> {
 
 	/**
-	 * Invoked whenever the specified <var>cursor</var> is about to be changed in the given <var>adapter</var>.
+	 * Invoked whenever the specified <var>data</var> are about to be changed in the given <var>adapter</var>.
 	 * <p>
-	 * During duration of this call, the adapter still references the previous cursor.
+	 * During duration of this call, the adapter still references the previous data.
 	 *
-	 * @param adapter The adapter of which cursor to change.
-	 * @param data  The cursor to be changed. May be {@code null}.
+	 * @param adapter The adapter of which data are about to be changed.
+	 * @param data    The data to be changed. May be {@code null}.
 	 */
 	void onDataChange(@NonNull Adapter adapter, @Nullable Data data);
 
 	/**
-	 * Invoked after {@link #onDataChange(Object, Cursor)} callback has been fired and cursor change
+	 * Invoked after {@link #onDataChange(Object, Object)} callback has been fired and data change
 	 * has been finished.
 	 * <p>
-	 * When this callback is fired, the adapter already references the changed cursor.
+	 * When this callback is fired, the adapter already references the changed data.
 	 *
-	 * @param adapter The adapter where the cursor has been changed.
-	 * @param data  The changed cursor. May be {@code null}.
+	 * @param adapter The adapter where the data has been changed.
+	 * @param data    The changed data. May be {@code null}.
 	 */
 	void onDataChanged(@NonNull Adapter adapter, @Nullable Data data);
 }

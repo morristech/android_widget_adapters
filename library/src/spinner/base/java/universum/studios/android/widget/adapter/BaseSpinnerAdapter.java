@@ -24,20 +24,17 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 
-import universum.studios.android.widget.adapter.BaseAdapter;
-import universum.studios.android.widget.adapter.SimpleSpinnerAdapter;
-
 /**
- * A {@link BaseAdapter} implementation to provide optimized adapter also for {@link android.widget.Spinner}
- * widget. This "spinner based" adapter also supports API to store current selected item. The position
- * of selected item is stored whenever {@link #getView(int, View, ViewGroup)}
- * is called. Position of the current selected item can be obtained via {@link #getSelectedPosition()}.
+ * A {@link BaseAdapter} implementation that may be used to provide optimized adapter also for
+ * {@link android.widget.Spinner Spinner} widget. This "spinner based" adapter also supports API to
+ * store current selected item and its corresponding position. The position of the selected item is
+ * stored whenever {@link #getView(int, View, ViewGroup)} is called. The selected item position may
+ * be obtained via {@link #getSelectedItemPosition()}.
  *
  * @param <Item> A type of the item presented within a data set of a subclass of this BaseSpinnerAdapter.
  * @param <VH>   A type of the view holder used within a subclass of this BaseSpinnerAdapter.
  * @param <DVH>  A type of the drop down view holder used within a subclass of this BaseSpinnerAdapter.
  * @author Martin Albedinsky
- * @see SimpleSpinnerAdapter
  */
 public abstract class BaseSpinnerAdapter<Item, VH, DVH> extends BaseAdapter<Item, VH> {
 
@@ -85,23 +82,24 @@ public abstract class BaseSpinnerAdapter<Item, VH, DVH> extends BaseAdapter<Item
 	 */
 
 	/**
-	 * Returns the currently selected item.
+	 * Returns the item model of this adapter for the current selected position.
 	 *
-	 * @return An item obtained via {@link #getItem(int)} for the current selected position.
-	 * @see #getSelectedPosition()
+	 * @return Item obtained via {@link #getItem(int)} for the current selected position.
+	 * @see #getSelectedItemPosition()
 	 */
-	@Nullable
+	@NonNull
 	public Item getSelectedItem() {
 		return getItem(mSelectedPosition);
 	}
 
 	/**
-	 * Returns the currently selected position.
+	 * Returns the position of the currently selected item.
 	 *
-	 * @return Position of item that is currently selected within a related Spinner widget.
+	 * @return Position of item that is currently selected within a related Spinner widget or
+	 * {@link #NO_POSITION} if this adapter does not have its data set specified.
 	 * @see #getSelectedItem()
 	 */
-	public int getSelectedPosition() {
+	public int getSelectedItemPosition() {
 		return mSelectedPosition;
 	}
 
@@ -121,9 +119,7 @@ public abstract class BaseSpinnerAdapter<Item, VH, DVH> extends BaseAdapter<Item
 	public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 		Object viewHolder;
 		if (convertView == null) {
-			// Dispatch to create new drop down view.
 			convertView = onCreateDropDownView(parent, position);
-			// Resolve holder for the newly created drop down view.
 			final Object holder = onCreateDropDownViewHolder(convertView, position);
 			if (holder != null) {
 				convertView.setTag(viewHolder = holder);
@@ -135,23 +131,21 @@ public abstract class BaseSpinnerAdapter<Item, VH, DVH> extends BaseAdapter<Item
 			viewHolder = holder != null ? holder : convertView;
 		}
 		ensureViewHolderPosition(viewHolder, position);
-		// Dispatch to bind drop down view with data.
 		onBindDropDownViewHolder((DVH) viewHolder, position);
 		return convertView;
 	}
 
 	/**
-	 * Invoked to create a drop down view for an item from the current data set at the specified position.
+	 * Invoked to create a drop down view for an item from the current data set at the specified
+	 * <var>position</var>.
 	 * <p>
 	 * This is invoked only if <var>convertView</var> for the specified <var>position</var> in
 	 * {@link #getDropDownView(int, View, ViewGroup)} was {@code null}.
-	 * <p>
-	 * Default implementation invokes {@link #onCreateView(ViewGroup, int)}.
 	 *
 	 * @param parent   A parent view, to resolve correct layout params for the newly creating view.
 	 * @param position Position of the item from the current data set for which should be a new drop
 	 *                 down view created.
-	 * @return New instance of the requested view.
+	 * @return New instance of the requested drop down view.
 	 * @see #inflate(int, ViewGroup)
 	 */
 	@NonNull
@@ -161,17 +155,18 @@ public abstract class BaseSpinnerAdapter<Item, VH, DVH> extends BaseAdapter<Item
 
 	/**
 	 * Invoked to create a view holder for a drop down view of an item from the current data set at
-	 * the specified position.
+	 * the specified <var>position</var>.
 	 * <p>
 	 * This is invoked only if <var>convertView</var> for the specified <var>position</var> in
-	 * {@link #getDropDownView(int, View, ViewGroup)} was {@code null},
-	 * so as view also holder need to be created.
+	 * {@link #getDropDownView(int, View, ViewGroup)} was {@code null}, so drop down view along with
+	 * its corresponding holder need to be created.
 	 *
-	 * @param itemView An instance of the same view as obtained from {@link #onCreateDropDownView(ViewGroup, int)}
+	 * @param itemView The same view as obtained from {@link #onCreateDropDownView(ViewGroup, int)}
 	 *                 for the specified position.
 	 * @param position Position of the item from the current data set for which should be a new drop
 	 *                 down view holder created.
-	 * @return New instance of the requested drop down view holder.
+	 * @return New instance of the requested view holder or {@code null} if holder for the drop
+	 * down view is not required.
 	 */
 	@Nullable
 	@SuppressWarnings("unchecked")
@@ -180,45 +175,43 @@ public abstract class BaseSpinnerAdapter<Item, VH, DVH> extends BaseAdapter<Item
 	}
 
 	/**
+	 * This implementation by default invokes {@link #onUpdateViewHolder(Object, Item, int)} with
+	 * item at the current selected position.
+	 *
+	 * @see #getSelectedItemPosition()
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void onBindViewHolder(@NonNull VH viewHolder, int position) {
-		final Item selectedItem = getSelectedItem();
-		if (selectedItem != null) onUpdateViewHolder((DVH) viewHolder, selectedItem, position);
+		onUpdateViewHolder((DVH) viewHolder, getSelectedItem(), position);
 	}
 
 	/**
-	 * Invoked to set up and populate a drop down view of an item from the current data set at the
-	 * specified position. This is invoked whenever {@link #getDropDownView(int, View, ViewGroup)}
+	 * Invoked to configure and bind a drop down view of an item from the current data set at the
+	 * specified <var>position</var>. This is invoked whenever {@link #getDropDownView(int, View, ViewGroup)}
 	 * is called.
 	 * <p>
-	 * <b>Note</b>, that if {@link #onCreateDropDownViewHolder(View, int)} returns {@code null}
-	 * for the specified <var>position</var> here passed <var>viewHolder</var> will be the view created
-	 * by {@link #onCreateDropDownView(ViewGroup, int)} for the specified position or
-	 * just recycled view for such a position. This approach can be used, when a view hierarchy of
-	 * the specific spinner drop down item is represented by one custom view, where such a view
-	 * represents a holder for all its child views.
-	 * <p>
-	 * By default this will call {@link #onUpdateViewHolder(Object, Object, int)} with an item obtained via
-	 * {@link #getItem(int)} for the specified position.
+	 * <b>Note</b>, that if {@link #onCreateDropDownViewHolder(View, int)} returns {@code null} for
+	 * the specified <var>position</var> here passed <var>viewHolder</var> will be the view created
+	 * by {@link #onCreateDropDownView(ViewGroup, int)} for the specified position or just recycled
+	 * view for that position. This approach may be used when a view hierarchy of a specific item is
+	 * represented by single custom view, where such view represents a holder for all its child views.
 	 *
-	 * @param viewHolder An instance of the same holder as provided by {@link #onCreateDropDownViewHolder(View, int)}
+	 * @param viewHolder The same holder as provided by {@link #onCreateDropDownViewHolder(View, int)}
 	 *                   for the specified position or converted view as holder as described above.
-	 * @param position   Position of the item from the current data set of which drop down view to
-	 *                   set up.
+	 * @param position   Position of the item from the current data set of which view to bind with data.
 	 */
 	protected void onBindDropDownViewHolder(@NonNull DVH viewHolder, int position) {
 		onUpdateViewHolder(viewHolder, getItem(position), position);
 	}
 
 	/**
-	 * Invoked to update views within the given <var>viewHolder</var> with data of the given <var>item</var>.
+	 * Invoked to update views of the given <var>viewHolder</var> with data of the given <var>cursor</var>.
 	 *
-	 * @param viewHolder An instance of the same holder as provided by {@link #onCreateDropDownViewHolder(View, int)}
-	 *                   or {@link #onCreateViewHolder(View, int)} for the specified position.
-	 * @param item       Always valid item obtained via {@link #getItem(int)} for the specified position.
-	 * @param position   Position of the item from the current data set.
+	 * @param viewHolder The view holder passed either to {@link #onBindViewHolder(Object, int)} or
+	 *                   to {@link #onBindDropDownViewHolder(Object, int)}.
+	 * @param item       Item from the adapter's data set at the specified position.
+	 * @param position   Position of the item from the current data set of which view holder to update.
 	 */
 	protected abstract void onUpdateViewHolder(@NonNull DVH viewHolder, @NonNull Item item, int position);
 

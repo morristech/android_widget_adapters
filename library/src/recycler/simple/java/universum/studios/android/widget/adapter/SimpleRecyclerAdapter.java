@@ -22,25 +22,26 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.view.ViewGroup;
 
 import java.util.Arrays;
 import java.util.List;
 
-import universum.studios.android.widget.adapter.BaseRecyclerAdapter;
-
 /**
- * A {@link BaseRecyclerAdapter} implementation which specifies simple API and structure to manage
- * data set of custom items. This adapter supports changing of the current data set via {@link #changeItems(Object[])}
- * and obtaining an item for a requested position via {@link #getItem(int)}.
+ * A {@link BaseRecyclerAdapter} implementation which specifies simple API for data set management
+ * of items. This adapter supports changing of the current data set via {@link #changeItems(List)}
+ * and obtaining an item for a desired position via {@link #getItem(int)}. All items attached to the
+ * adapter may be obtained via {@link #getItems()}.
  * <p>
- * In the simplest implementation case of this adapter, only {@link #onBindViewHolder(RecyclerView.ViewHolder, int)}
- * and method is required to be implemented to take a full advantage of this adapter class.
+ * In the simplest implementation case of this adapter, only {@link #onCreateViewHolder(ViewGroup, int)}
+ * and {@link #onBindViewHolder(RecyclerView.ViewHolder, int)} methods are required to be implemented
+ * to take a full advantage of this adapter class.
  *
- * @param <Item> A type of the item presented within a data set of a subclass of this SimpleRecyclerAdapter.
- * @param <VH>   A type of the view holder used within a subclass of this SimpleRecyclerAdapter.
+ * @param <Item> Type of the item presented within a data set of a subclass of this SimpleRecyclerAdapter.
+ * @param <VH>   Type of the view holder used within a subclass of this SimpleRecyclerAdapter.
  * @author Martin Albedinsky
  */
-public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHolder> extends BaseRecyclerAdapter<Item, VH> {
+public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHolder> extends BaseRecyclerAdapter<Item, VH> implements ItemsAdapter<Item> {
 
 	/**
 	 * Interface ===================================================================================
@@ -64,40 +65,38 @@ public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHo
 	 */
 
 	/**
-	 * Data set of this adapter.
-	 */
-	private List<Item> mItems;
-
-	/**
 	 * Constructors ================================================================================
 	 */
 
 	/**
-	 * Creates a new instance of SimpleRecyclerAdapter.
+	 * Creates a new instance of SimpleRecyclerAdapter without initial items data set.
 	 *
 	 * @param context Context in which will be this adapter used.
+	 * @see #SimpleRecyclerAdapter(Context, Object[])
+	 * @see #SimpleRecyclerAdapter(Context, List)
 	 */
 	public SimpleRecyclerAdapter(@NonNull Context context) {
 		super(context);
 	}
 
 	/**
-	 * Same as {@link #SimpleRecyclerAdapter(Context, List)} so the given
-	 * <var>items</var> array will be converted to List.
+	 * Same as {@link #SimpleRecyclerAdapter(Context, List)} for array of initial <var>items</var>
+	 * data set.
 	 */
 	public SimpleRecyclerAdapter(@NonNull Context context, @NonNull Item[] items) {
 		this(context, Arrays.asList(items));
 	}
 
 	/**
-	 * Creates a new instance of SimpleRecyclerAdapter with the given <var>items</var> data set.
+	 * Creates a new instance of SimpleRecyclerAdapter with the given initial <var>items</var> data
+	 * set.
 	 *
 	 * @param context Context in which will be this adapter used.
 	 * @param items   List of items to be used as initial data set for this adapter.
 	 */
 	public SimpleRecyclerAdapter(@NonNull Context context, @NonNull List<Item> items) {
 		super(context);
-		this.mItems = items;
+		mDataSet.attachData(items);
 	}
 
 	/**
@@ -105,66 +104,51 @@ public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHo
 	 */
 
 	/**
-	 * Returns the current data set of this adapter.
-	 *
-	 * @return Data set of this adapter or {@code null} if there is no data set presented within
-	 * this adapter.
 	 */
-	@Nullable
-	public List<Item> getItems() {
-		return mItems;
-	}
-
-	/**
-	 * Like {@link #changeItems(List)}, but this will also return the old data set.
-	 */
-	@Nullable
-	public List<Item> swapItems(@Nullable List<Item> items) {
-		final List<Item> oldItems = mItems;
-		changeItems(items);
-		return oldItems;
-	}
-
-	/**
-	 * Changes the current data set of this adapter.
-	 * <p>
-	 * This will also notify data set change if the given <var>items</var> are valid, otherwise will
-	 * notify data set invalidation.
-	 *
-	 * @param items A set of items to set as the current data set for this adapter.
-	 * @see #swapItems(List)
-	 * @see #clearItems()
-	 */
+	@Override
 	public void changeItems(@Nullable List<Item> items) {
-		this.mItems = items;
-		notifyDataSetChanged();
+		swapItems(items);
 	}
 
 	/**
-	 * Same as {@link #changeItems(List)} so the given <var>items</var> array will be converted
-	 * to List.
 	 */
-	public void changeItems(@NonNull Item[] items) {
-		changeItems(Arrays.asList(items));
-	}
-
-	/**
-	 * Clears the current data set of this adapter.
-	 * <p>
-	 * This will also notify data set change.
-	 */
-	public void clearItems() {
-		if (mItems != null) {
-			mItems.clear();
+	@Nullable
+	@Override
+	public List<Item> swapItems(@Nullable List<Item> items) {
+		final List<Item> oldData = mDataSet.getData();
+		if (items != null) {
+			mDataSet.notifyDataChange(items);
+			mDataSet.attachData(items);
+			notifyDataSetChanged();
+		} else {
+			mDataSet.notifyDataChange(null);
+			mDataSet.attachData(null);
 			notifyDataSetChanged();
 		}
+		mDataSet.notifyDataChanged(items);
+		return oldData;
+	}
+
+	/**
+	 */
+	@Nullable
+	@Override
+	public List<Item> getItems() {
+		return mDataSet.getData();
 	}
 
 	/**
 	 */
 	@Override
 	public int getItemCount() {
-		return mItems != null ? mItems.size() : 0;
+		return mDataSet.getItemCount();
+	}
+
+	/**
+	 */
+	@Override
+	public boolean hasItemAt(int position) {
+		return mDataSet.hasItemAt(position);
 	}
 
 	/**
@@ -172,14 +156,7 @@ public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHo
 	@NonNull
 	@Override
 	public Item getItem(int position) {
-		final int itemsCount = getItemCount();
-		if (position < 0 || position >= itemsCount) {
-			throw new IndexOutOfBoundsException(
-					"Requested item at invalid position(" + position + "). " +
-							"Current data set is in size of(" + itemsCount + ") items."
-			);
-		}
-		return mItems.get(position);
+		return mDataSet.getItem(position);
 	}
 
 	/**

@@ -21,6 +21,7 @@ package universum.studios.android.widget.adapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Parcelable;
+import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,11 +31,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Extended version of {@link android.support.v7.widget.RecyclerView.Adapter} that supports features
- * like {@link BaseAdapter}.
+ * Extended version of {@link android.support.v7.widget.RecyclerView.Adapter} that provides API of
+ * {@link DataSetAdapter}.
  *
- * @param <Item> A type of the item presented within a data set of a subclass of this BaseRecyclerAdapter.
- * @param <VH> A type of the view holder used within a subclass of this BaseRecyclerAdapter.
+ * @param <Item> Type of the item presented within a data set of a subclass of this BaseRecyclerAdapter.
+ * @param <VH>   Type of the view holder used within a subclass of this BaseRecyclerAdapter.
  * @author Martin Albedinsky
  * @see SimpleRecyclerAdapter
  */
@@ -72,19 +73,19 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 	protected final LayoutInflater mLayoutInflater;
 
 	/**
-	 * Application resources.
+	 * Application resources that may be used to obtain strings, texts, drawables, ... and other resources.
 	 */
 	protected final Resources mResources;
 
 	/**
-	 * Registered OnDataSetListener callback.
+	 * Data set handling data specified for this adapter.
 	 */
-	private OnDataSetListener mDataSetListener;
+	final AdapterDataSet<BaseRecyclerAdapter<Item, VH>, Item> mDataSet;
 
 	/**
-	 * Registered OnDataSetActionListener callback.
+	 * Data observer used to notify data set change to registered {@link OnDataSetListener OnDataSetListeners}.
 	 */
-	private OnDataSetActionListener mDataSetActionListener;
+	private RecyclerView.AdapterDataObserver mDataObserver;
 
 	/**
 	 * Constructors ================================================================================
@@ -99,6 +100,7 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 		this.mContext = context;
 		this.mLayoutInflater = LayoutInflater.from(context);
 		this.mResources = context.getResources();
+		this.mDataSet = new AdapterDataSet<>(this);
 	}
 
 	/**
@@ -106,108 +108,111 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 	 */
 
 	/**
-	 * Called to save the current state of this adapter.
-	 *
-	 * @return Saved state of this adapter or an <b>empty</b> state if this adapter does not need to
-	 * save its state.
 	 */
-	@NonNull
-	public Parcelable saveInstanceState() {
-		return onSaveInstanceState();
-	}
-
-	/**
-	 * Invoked immediately after {@link #saveInstanceState()} was called, to save the current
-	 * state of this adapter.
-	 * <p>
-	 * If you decide to override this method, do not forget to call {@code super.onSaveInstanceState()}
-	 * and pass super state obtained from the super to constructor of your {@link AdapterSavedState}
-	 * implementation with such a parameter to ensure the state of all classes along the chain is saved.
-	 *
-	 * @return Return here your implementation of {@link AdapterSavedState} if you want to save state
-	 * of your adapter, otherwise no implementation of this method is necessary.
-	 */
-	@NonNull
-	protected Parcelable onSaveInstanceState() {
-		return AdapterSavedState.EMPTY_STATE;
-	}
-
-	/**
-	 * Called to restore a previous state, saved by {@link #saveInstanceState()}, of this adapter.
-	 *
-	 * @param savedState Should be the same state as obtained via {@link #saveInstanceState()} before.
-	 */
-	public void restoreInstanceState(@NonNull Parcelable savedState) {
-		onRestoreInstanceState(savedState);
-	}
-
-	/**
-	 * Called immediately after {@link #restoreInstanceState(Parcelable)} was called,
-	 * to restore a previous state, (saved in {@link #onSaveInstanceState()}), of this adapter.
-	 *
-	 * @param savedState Before saved state of this adapter.
-	 */
-	protected void onRestoreInstanceState(@NonNull Parcelable savedState) {
+	@Override
+	public void registerOnDataChangeListener(@NonNull OnDataChangeListener listener) {
+		mDataSet.registerOnDataChangeListener(listener);
 	}
 
 	/**
 	 */
 	@Override
-	public void setOnDataSetListener(@Nullable OnDataSetListener listener) {
-		this.mDataSetListener = listener;
+	public void unregisterOnDataChangeListener(@NonNull OnDataChangeListener listener) {
+		mDataSet.unregisterOnDataChangeListener(listener);
 	}
 
 	/**
 	 */
 	@Override
-	public void setOnDataSetActionListener(@Nullable OnDataSetActionListener listener) {
-		this.mDataSetActionListener = listener;
-	}
+	public void registerOnDataSetListener(@NonNull OnDataSetListener listener) {
+		mDataSet.registerOnDataSetListener(listener);
+		if (mDataObserver == null) {
+			registerAdapterDataObserver(mDataObserver = new RecyclerView.AdapterDataObserver() {
 
-	/**
-	 */
-	/*@Override
-	@SuppressWarnings("unchecked")
-	public void notifyDataSetChanged() {
-		super.notifyDataSetChanged();
-		if (mDataSetListener != null) mDataSetListener.onDataSetChanged(this);
-	}*/
+				/**
+				 */
+				@Override
+				public void onChanged() {
+					mDataSet.notifyDataSetChanged();
+				}
 
-	/**
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public void notifyDataSetInvalidated() {
-		if (mDataSetListener != null) mDataSetListener.onDataSetInvalidated(this);
-	}
+				/**
+				 */
+				@Override
+				public void onItemRangeInserted(int positionStart, int itemCount) {
+					mDataSet.notifyDataSetChanged();
+				}
 
-	/**
-	 * Notifies, that the given <var>action</var> has been performed for the specified <var>position</var>.
-	 * <p>
-	 * If {@link #onDataSetActionSelected(int, int, Object)} will not process this call, the current
-	 * {@link OnDataSetActionListener} will be notified if it is presented.
-	 *
-	 * @param action   Action to be dispatched.
-	 * @param position The position for which was the given action performed.
-	 * @param data     Additional data for the selected action to be dispatched to the listener.
-	 */
-	@SuppressWarnings("unchecked")
-	protected void notifyDataSetActionSelected(int action, int position, @Nullable Object data) {
-		if (!onDataSetActionSelected(action, position, data)) {
-			if (mDataSetActionListener != null) mDataSetActionListener.onDataSetActionSelected(
-					this, action, position, getItemId(position), data
-			);
+				/**
+				 */
+				@Override
+				public void onItemRangeRemoved(int positionStart, int itemCount) {
+					mDataSet.notifyDataSetChanged();
+				}
+
+				/**
+				 */
+				@Override
+				public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
+					mDataSet.notifyDataSetChanged();
+				}
+			});
 		}
+	}
+
+	/**
+	 */
+	@Override
+	public void unregisterOnDataSetListener(@NonNull OnDataSetListener listener) {
+		mDataSet.unregisterOnDataSetListener(listener);
+		if (mDataObserver != null) {
+			unregisterAdapterDataObserver(mDataObserver);
+		}
+	}
+
+	/**
+	 */
+	@Override
+	public void registerOnDataSetActionListener(@NonNull OnDataSetActionListener listener) {
+		mDataSet.registerOnDataSetActionListener(listener);
+	}
+
+	/**
+	 * Notifies that the given <var>action</var> has been performed for the specified <var>position</var>.
+	 * <p>
+	 * If {@link #onDataSetActionSelected(int, int, Object)} will not process this call, the registered
+	 * {@link OnDataSetActionListener OnDataSetActionListeners} will be notified.
+	 * <p>
+	 * <b>Note, that invoking this method with 'invalid' position, out of bounds of the current data
+	 * set, will be ignored.</b>
+	 *
+	 * @param action   The action that was selected.
+	 * @param position The position for which was the specified action selected.
+	 * @param payload  Additional payload data for the selected action. May be {@code null} if no
+	 *                 payload has been specified.
+	 * @return {@code True} if the action has been handled internally by this adapter or by one of
+	 * the registers listeners, {@code false} otherwise.
+	 */
+	protected boolean notifyDataSetActionSelected(int action, int position, @Nullable Object payload) {
+		// Do not notify actions for invalid (out of bounds of the current data set) positions.
+		return position >= 0 && position < getItemCount() && mDataSet.notifyDataSetActionSelected(action, position, payload);
 	}
 
 	/**
 	 * Invoked immediately after {@link #notifyDataSetActionSelected(int, int, Object)} was called.
 	 *
-	 * @return {@code True} to indicate that this event was processed here, otherwise the current
-	 * {@link OnDataSetActionListener} will be notified about this event if it is presented.
+	 * @return {@code True} to indicate that this event was processed here, {@code false} to dispatch
+	 * this event to the registered {@link OnDataSetActionListener OnDataSetActionListeners}.
 	 */
-	protected boolean onDataSetActionSelected(int action, int position, @Nullable Object data) {
+	protected boolean onDataSetActionSelected(int action, int position, @Nullable Object payload) {
 		return false;
+	}
+
+	/**
+	 */
+	@Override
+	public void unregisterOnDataSetActionListener(@NonNull OnDataSetActionListener listener) {
+		mDataSet.unregisterOnDataSetActionListener(listener);
 	}
 
 	/**
@@ -220,16 +225,8 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 	/**
 	 */
 	@Override
-	public boolean hasItem(int position) {
-		return position >= 0 && position < getItemCount();
-	}
-
-	/**
-	 */
-	@Override
 	public long getItemId(int position) {
-		if (!hasStableIds()) return NO_ID;
-		else return position;
+		return position;
 	}
 
 	/**
@@ -253,7 +250,7 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 	 * @see LayoutInflater#inflate(int, ViewGroup)
 	 */
 	@NonNull
-	protected final View inflate(@LayoutRes int resource, @NonNull ViewGroup parent) {
+	protected View inflate(@LayoutRes int resource, @NonNull ViewGroup parent) {
 		return mLayoutInflater.inflate(resource, parent, false);
 	}
 
@@ -263,11 +260,33 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 	public abstract void onBindViewHolder(@NonNull VH viewHolder, int position);
 
 	/**
+	 * If you decide to override this method, do not forget to call {@code super.saveInstanceState()}
+	 * and pass the obtained super state to the corresponding constructor of your saved state
+	 * implementation to ensure the state of all classes along the chain is properly saved.
+	 */
+	@NonNull
+	@Override
+	@CallSuper
+	public Parcelable saveInstanceState() {
+		return AdapterSavedState.EMPTY_STATE;
+	}
+
+	/**
+	 * If you decide to override this method, do not forget to call {@code super.restoreInstanceState()}
+	 * and pass here the parent state obtained from the your saved state implementation to ensure the
+	 * state of all classes along the chain is properly restored.
+	 */
+	@Override
+	@CallSuper
+	public void restoreInstanceState(@NonNull Parcelable savedState) {
+	}
+
+	/**
 	 * Inner classes ===============================================================================
 	 */
 
 	/**
-	 * Default {@link android.support.v7.widget.RecyclerView.ViewHolder} implementation used as default
+	 * Simple {@link android.support.v7.widget.RecyclerView.ViewHolder} implementation used as default
 	 * holder for purpose of {@link #onCreateViewHolder(ViewGroup, int)} method.
 	 *
 	 * @author Martin Albedinsky

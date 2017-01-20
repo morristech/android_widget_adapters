@@ -26,23 +26,23 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * A {@link BaseSpinnerAdapter} implementation which specifies simple API and structure to manage data
- * set of custom items for {@link android.widget.Spinner} widget. This adapter supports changing of
- * the current data set by {@link #changeItems(Object[])} and obtaining an item for a requested position
- * by {@link #getItem(int)} methods.
+ * A {@link BaseSpinnerAdapter} implementation which specifies simple API for data set management of
+ * items. This adapter supports changing of the current data set via {@link #changeItems(List)} and
+ * obtaining an item for a desired position via {@link #getItem(int)}. All items attached to the
+ * adapter may be obtained via {@link #getItems()}.
  * <p>
- * In the simplest implementation case of this adapter, only  {@link #onCreateView(android.view.ViewGroup, int)}
- * and {@link #onBindViewHolder(Object, int)} methods are need to be implemented to take a full advantage
- * of this adapter class. The simplest scenario assumes that both spinner view and drop down view
- * are the same, if not also {@link #onCreateDropDownView(android.view.ViewGroup, int)} and
+ * In the simplest implementation case of this adapter, only {@link #onCreateView(android.view.ViewGroup, int)}
+ * and {@link #onBindViewHolder(Object, int)} methods are required to be implemented to take a full
+ * advantage of this adapter class. The simplest scenario assumes that both spinner view and drop down
+ * view are the same, if not also {@link #onCreateDropDownView(android.view.ViewGroup, int)} and
  * {@link #onBindDropDownViewHolder(Object, int)} need to be implemented as well.
  *
- * @param <Item> A type of the item presented within a data set of a subclass of this SimpleSpinnerAdapter.
- * @param <VH>   A type of the view holder used within a subclass of this SimpleSpinnerAdapter.
- * @param <DVH>   A type of the drop down view holder used within a subclass of this SimpleSpinnerAdapter.
+ * @param <Item> Tpe of the item presented within a data set of a subclass of this SimpleSpinnerAdapter.
+ * @param <VH>   Type of the view holder used within a subclass of this SimpleSpinnerAdapter.
+ * @param <DVH>  Type of the drop down view holder used within a subclass of this SimpleSpinnerAdapter.
  * @author Martin Albedinsky
  */
-public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAdapter<Item, VH, DVH> {
+public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAdapter<Item, VH, DVH> implements ItemsAdapter<Item> {
 
 	/**
 	 * Interface ===================================================================================
@@ -66,40 +66,38 @@ public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAda
 	 */
 
 	/**
-	 * Data set of this adapter.
-	 */
-	private List<Item> mItems;
-
-	/**
 	 * Constructors ================================================================================
 	 */
 
 	/**
-	 * Creates a new instance of SimpleSpinnerAdapter.
+	 * Creates a new instance of SimpleSpinnerAdapter without initial items data set.
 	 *
 	 * @param context Context in which will be this adapter used.
+	 * @see #SimpleSpinnerAdapter(Context, Object[])
+	 * @see #SimpleSpinnerAdapter(Context, List)
 	 */
 	public SimpleSpinnerAdapter(@NonNull Context context) {
 		super(context);
 	}
 
 	/**
-	 * Same as {@link #SimpleSpinnerAdapter(Context, List)} so the given
-	 * <var>items</var> array will be converted to List.
+	 * Same as {@link #SimpleSpinnerAdapter(Context, List)} for array of initial <var>items</var>
+	 * data set.
 	 */
 	public SimpleSpinnerAdapter(@NonNull Context context, @NonNull Item[] items) {
 		this(context, Arrays.asList(items));
 	}
 
 	/**
-	 * Creates a new instance of SimpleSpinnerAdapter with the given <var>items</var> data set.
+	 * Creates a new instance of SimpleSpinnerAdapter with the given initial <var>items</var>
+	 * data set.
 	 *
 	 * @param context Context in which will be this adapter used.
 	 * @param items   List of items to be used as initial data set for this adapter.
 	 */
 	public SimpleSpinnerAdapter(@NonNull Context context, @NonNull List<Item> items) {
 		super(context);
-		this.mItems = items;
+		mDataSet.attachData(items);
 	}
 
 	/**
@@ -107,70 +105,51 @@ public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAda
 	 */
 
 	/**
-	 * Returns the current data set of this adapter.
-	 *
-	 * @return Data set of this adapter or {@code null} if there is no data set presented within
-	 * this adapter.
 	 */
-	@Nullable
-	public List<Item> getItems() {
-		return mItems;
-	}
-
-	/**
-	 * Like {@link #changeItems(List)}, but this will also return the old data set.
-	 */
-	@Nullable
-	public List<Item> swapItems(@Nullable List<Item> items) {
-		final List<Item> oldItems = mItems;
-		changeItems(items);
-		return oldItems;
-	}
-
-	/**
-	 * Changes the current data set of this adapter.
-	 * <p>
-	 * This will also notify data set change if the given <var>items</var> are valid, otherwise will
-	 * notify data set invalidation.
-	 *
-	 * @param items A set of items to set as the current data set for this adapter.
-	 * @see #swapItems(List)
-	 * @see #clearItems()
-	 */
+	@Override
 	public void changeItems(@Nullable List<Item> items) {
-		this.mItems = items;
+		swapItems(items);
+	}
+
+	/**
+	 */
+	@Nullable
+	@Override
+	public List<Item> swapItems(@Nullable List<Item> items) {
+		final List<Item> oldData = mDataSet.getData();
 		if (items != null) {
+			mDataSet.notifyDataChange(items);
+			mDataSet.attachData(items);
 			notifyDataSetChanged();
 		} else {
-			notifyDataSetInvalidated();
-		}
-	}
-
-	/**
-	 * Same as {@link #changeItems(List)} so the given <var>items</var> array will be converted
-	 * to List.
-	 */
-	public void changeItems(@NonNull Item[] items) {
-		changeItems(Arrays.asList(items));
-	}
-
-	/**
-	 * Clears the current data set of this adapter.
-	 * <p>
-	 * This will also notify data set change.
-	 */
-	public void clearItems() {
-		if (mItems != null) {
-			mItems.clear();
+			mDataSet.notifyDataChange(null);
+			mDataSet.attachData(null);
 			notifyDataSetChanged();
 		}
+		mDataSet.notifyDataChanged(items);
+		return oldData;
+	}
+
+	/**
+	 */
+	@Nullable
+	@Override
+	public List<Item> getItems() {
+		return mDataSet.getData();
 	}
 
 	/**
 	 */
 	@Override
 	public int getItemCount() {
-		return mItems != null ? mItems.size() : 0;
+		return mDataSet.getItemCount();
+	}
+
+	/**
+	 */
+	@Override
+	public boolean hasItemAt(int position) {
+		return mDataSet.hasItemAt(position);
 	}
 
 	/**
@@ -178,14 +157,7 @@ public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAda
 	@NonNull
 	@Override
 	public Item getItem(int position) {
-		final int itemsCount = getItemCount();
-		if (position < 0 || position >= itemsCount) {
-			throw new IndexOutOfBoundsException(
-					"Requested item at invalid position(" + position + "). " +
-							"Current data set is in size of(" + itemsCount + ") items."
-			);
-		}
-		return mItems.get(position);
+		return mDataSet.getItem(position);
 	}
 
 	/**

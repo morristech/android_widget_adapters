@@ -46,12 +46,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	/**
 	 * Log TAG.
 	 */
-	// private static final String TAG = "CursorAdapterDataSet";
-
-	/**
-	 * Constant that identifies invalid/unspecified index.
-	 */
-	static final int NO_INDEX = -1;
+	// private static final String TAG = "AdapterDataSet";
 
 	/**
 	 * Defines an annotation for determining set of flags that may be used for listeners related
@@ -91,11 +86,11 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 * related flagging.
 	 */
 	@IntDef(flag = true, value = {
-			CALLBACK_CURSOR_CHANGE,
-			CALLBACK_CURSOR_CHANGED,
-			CALLBACK_CURSOR_DATA_SET_CHANGED,
-			CALLBACK_CURSOR_DATA_SET_INVALIDATED,
-			CALLBACK_CURSOR_DATA_SET_ACTION_SELECTED
+			CALLBACK_DATA_CHANGE,
+			CALLBACK_DATA_CHANGED,
+			CALLBACK_DATA_SET_CHANGED,
+			CALLBACK_DATA_SET_INVALIDATED,
+			CALLBACK_DATA_SET_ACTION_SELECTED
 	})
 	@Retention(RetentionPolicy.SOURCE)
 	@interface ListenerCallback {
@@ -104,36 +99,36 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	/**
 	 * Flag used to identify {@link OnDataChangeListener#onDataChange(Object, Object)} callback.
 	 */
-	static final int CALLBACK_CURSOR_CHANGE = 0x00000001;
+	static final int CALLBACK_DATA_CHANGE = 0x00000001;
 
 	/**
 	 * Flag used to identify {@link OnDataChangeListener#onDataChanged(Object, Object)} callback.
 	 */
-	static final int CALLBACK_CURSOR_CHANGED = 0x00000001 << 1;
+	static final int CALLBACK_DATA_CHANGED = 0x00000001 << 1;
 
 	/**
 	 * Flag used to identify {@link OnDataSetListener#onDataSetChanged(Object)} callback.
 	 */
-	static final int CALLBACK_CURSOR_DATA_SET_CHANGED = 0x00000001 << 2;
+	static final int CALLBACK_DATA_SET_CHANGED = 0x00000001 << 2;
 
 	/**
 	 * Flag used to identify {@link OnDataSetListener#onDataSetInvalidated(Object)} callback.
 	 */
-	static final int CALLBACK_CURSOR_DATA_SET_INVALIDATED = 0x00000001 << 3;
+	static final int CALLBACK_DATA_SET_INVALIDATED = 0x00000001 << 3;
 
 	/**
 	 * Flag used to identify {@link OnDataSetActionListener#onDataSetActionSelected(Object, int, int, long, Object)}
 	 * callback.
 	 */
-	static final int CALLBACK_CURSOR_DATA_SET_ACTION_SELECTED = 0x00000001 << 4;
+	static final int CALLBACK_DATA_SET_ACTION_SELECTED = 0x00000001 << 4;
 
 	/**
 	 * Flag grouping all listener callback flags defined by {@link ListenerCallback @ListenerCallback}
 	 * annotation.
 	 */
-	private static final int CALLBACK_ALL = CALLBACK_CURSOR_CHANGE | CALLBACK_CURSOR_CHANGED |
-			CALLBACK_CURSOR_DATA_SET_CHANGED | CALLBACK_CURSOR_DATA_SET_INVALIDATED |
-			CALLBACK_CURSOR_DATA_SET_ACTION_SELECTED;
+	private static final int CALLBACK_ALL = CALLBACK_DATA_CHANGE | CALLBACK_DATA_CHANGED |
+			CALLBACK_DATA_SET_CHANGED | CALLBACK_DATA_SET_INVALIDATED |
+			CALLBACK_DATA_SET_ACTION_SELECTED;
 
 	/**
 	 * Static members ==============================================================================
@@ -164,9 +159,9 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	private List<OnDataSetActionListener> mDataSetActionListeners;
 
 	/**
-	 * Cursor attached to this data set.
+	 * Data attached to this data set.
 	 */
-	// todo: ??? private C mCursor;
+	private List<Item> mData;
 
 	/**
 	 * Listener flags determining which listeners are enabled to be notified.
@@ -239,7 +234,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 */
 	@SuppressWarnings("unchecked")
 	void notifyDataChange(Object data) {
-		if ((mEnabledListeners & LISTENER_CHANGE) == 0 || (mEnabledListenerCallbacks & CALLBACK_CURSOR_CHANGE) == 0) {
+		if ((mEnabledListeners & LISTENER_CHANGE) == 0 || (mEnabledListenerCallbacks & CALLBACK_DATA_CHANGE) == 0) {
 			return;
 		}
 		if (mDataChangeListeners != null && !mDataChangeListeners.isEmpty()) {
@@ -258,7 +253,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 */
 	@SuppressWarnings("unchecked")
 	void notifyDataChanged(Object data) {
-		if ((mEnabledListeners & LISTENER_CHANGE) == 0 || (mEnabledListenerCallbacks & CALLBACK_CURSOR_CHANGED) == 0) {
+		if ((mEnabledListeners & LISTENER_CHANGE) == 0 || (mEnabledListenerCallbacks & CALLBACK_DATA_CHANGED) == 0) {
 			return;
 		}
 		if (mDataChangeListeners != null && !mDataChangeListeners.isEmpty()) {
@@ -291,7 +286,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 */
 	@SuppressWarnings("unchecked")
 	void notifyDataSetChanged() {
-		if ((mEnabledListeners & LISTENER_DATA_SET) == 0 || (mEnabledListenerCallbacks & CALLBACK_CURSOR_DATA_SET_CHANGED) == 0) {
+		if ((mEnabledListeners & LISTENER_DATA_SET) == 0 || (mEnabledListenerCallbacks & CALLBACK_DATA_SET_CHANGED) == 0) {
 			return;
 		}
 		if (mDataSetListeners != null && !mDataSetListeners.isEmpty()) {
@@ -309,7 +304,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 */
 	@SuppressWarnings("unchecked")
 	void notifyDataSetInvalidated() {
-		if ((mEnabledListeners & LISTENER_DATA_SET) == 0 || (mEnabledListenerCallbacks & CALLBACK_CURSOR_DATA_SET_INVALIDATED) == 0) {
+		if ((mEnabledListeners & LISTENER_DATA_SET) == 0 || (mEnabledListenerCallbacks & CALLBACK_DATA_SET_INVALIDATED) == 0) {
 			return;
 		}
 		if (mDataSetListeners != null && !mDataSetListeners.isEmpty()) {
@@ -347,7 +342,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 */
 	@SuppressWarnings("unchecked")
 	boolean notifyDataSetActionSelected(int action, int position, Object payload) {
-		if ((mEnabledListeners & LISTENER_DATA_SET_ACTION) == 0 || (mEnabledListenerCallbacks & CALLBACK_CURSOR_DATA_SET_ACTION_SELECTED) == 0) {
+		if ((mEnabledListeners & LISTENER_DATA_SET_ACTION) == 0 || (mEnabledListenerCallbacks & CALLBACK_DATA_SET_ACTION_SELECTED) == 0) {
 			return false;
 		}
 		if (mDataSetActionListeners != null && !mDataSetActionListeners.isEmpty()) {
@@ -367,35 +362,29 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 		if (mDataSetActionListeners != null) this.mDataSetActionListeners.remove(listener);
 	}
 
-	// todo: ???
 	/**
-	 * Attaches the given <var>cursor</var> to this data set and returns the old cursor that has been
+	 * Attaches the given <var>data</var> to this data set and returns the old data that has been
 	 * attached.
 	 *
-	 * @param cursor The desired cursor to attach. May be {@code null}.
-	 * @return Old cursor that has been attached to this data set before or {@code null} if there
-	 * was no cursor attached.
-	 * @see #isCursorAvailable()
-	 * @see #getCursor()
+	 * @param data The desired data to attach. May be {@code null}.
+	 * @return Old data that has been attached to this data set before or {@code null} if there
+	 * were no data attached.
+	 * @see #getData()
 	 */
-	/*C attachCursor(C cursor) {
-		final C oldCursor = mCursor;
-		this.mCursor = cursor;
-		if (mCursor != null && !mCursor.isClosed()) {
-			this.mIdColumnIndex = mCursor.getColumnIndexOrThrow(Column.Primary.COLUMN_NAME);
-		} else {
-			this.mIdColumnIndex = NO_INDEX;
-		}
-		return oldCursor;
-	}*/
+	List<Item> attachData(List<Item> data) {
+		final List<Item> oldData = mData;
+		this.mData = data;
+		return oldData;
+	}
 
 	/**
+	 * Returns the current data attached to this data set.
+	 *
+	 * @return Current data or {@code null} if there was no data attached yet.
 	 */
-	/*@Nullable
-	@Override
-	public C getCursor() {
-		return mCursor;
-	}*/
+	List<Item> getData() {
+		return mData;
+	}
 
 	/**
 	 */
@@ -408,8 +397,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 */
 	@Override
 	public int getItemCount() {
-		// todo:
-		return 0;
+		return mData != null ? mData.size() : 0;
 	}
 
 	/**
@@ -431,7 +419,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 							"Data set has items in count of(" + getItemCount() + ")."
 			);
 		}
-		return null;
+		return mData.get(position);
 	}
 
 	/**

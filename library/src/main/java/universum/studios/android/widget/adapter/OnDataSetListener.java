@@ -23,7 +23,7 @@ import android.support.annotation.NonNull;
 /**
  * Listener which receives callbacks about changed and invalidated adapter's data set.
  *
- * @param <Adapter> A type of the Adapter to which will be this data set listener attached.
+ * @param <Adapter> Type of the Adapter to which will be this data set listener attached.
  * @author Martin Albedinsky
  */
 public interface OnDataSetListener<Adapter> {
@@ -31,14 +31,14 @@ public interface OnDataSetListener<Adapter> {
 	/**
 	 * Invoked whenever the current data set within the passed <var>adapter</var> was changed.
 	 *
-	 * @param adapter An instance of the adapter of which current data set was just changed.
+	 * @param adapter The adapter of which current data set was just changed.
 	 */
 	void onDataSetChanged(@NonNull Adapter adapter);
 
 	/**
 	 * Invoked whenever the current data set within the passed <var>adapter</var> was invalidated.
 	 *
-	 * @param adapter An instance of the adapter of which current data set was just invalidated.
+	 * @param adapter The adapter of which current data set was just invalidated.
 	 */
 	void onDataSetInvalidated(@NonNull Adapter adapter);
 }

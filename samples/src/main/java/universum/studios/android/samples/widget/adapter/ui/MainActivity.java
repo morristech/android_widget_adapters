@@ -18,21 +18,65 @@
  */
 package universum.studios.android.samples.widget.adapter.ui;
 
+import android.app.Fragment;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.MenuItem;
 
+import universum.studios.android.fragment.manage.FragmentController;
+import universum.studios.android.fragment.manage.FragmentRequest;
+import universum.studios.android.fragment.manage.FragmentRequestInterceptor;
+import universum.studios.android.fragment.transition.FragmentTransitions;
 import universum.studios.android.samples.ui.SamplesNavigationActivity;
+import universum.studios.android.samples.widget.adapter.R;
+import universum.studios.android.samples.widget.adapter.ui.list.ListFragment;
+import universum.studios.android.samples.widget.adapter.ui.recycler.RecyclerFragment;
+import universum.studios.android.samples.widget.adapter.ui.spinner.SpinnerFragment;
 
 /**
  * @author Martin Albedinsky
  */
-public final class MainActivity extends SamplesNavigationActivity {
+public final class MainActivity extends SamplesNavigationActivity implements FragmentRequestInterceptor {
 
 	@SuppressWarnings("unused")
 	private static final String TAG = "MainActivity";
 
+	private FragmentController fragmentController;
+
 	@Override
-	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+	protected void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		this.fragmentController = new FragmentController(this);
+		this.fragmentController.setViewContainerId(R.id.samples_container);
+		if (savedInstanceState == null) {
+			fragmentController.newRequest(new HomeFragment()).execute();
+		}
+	}
+
+	@Nullable
+	@Override
+	public Fragment interceptFragmentRequest(@NonNull FragmentRequest request) {
+		request.transition(FragmentTransitions.CROSS_FADE).replaceSame(true);
+		return null;
+	}
+
+	@Override
+	protected boolean onHandleNavigationItemSelected(@NonNull MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.navigation_item_home:
+				fragmentController.newRequest(new HomeFragment()).execute();
+				return true;
+			case R.id.navigation_item_recycler:
+				fragmentController.newRequest(new RecyclerFragment()).execute();
+				return true;
+			case R.id.navigation_item_list:
+				fragmentController.newRequest(new ListFragment()).execute();
+				return true;
+			case R.id.navigation_item_spinner:
+				fragmentController.newRequest(new SpinnerFragment()).execute();
+				return true;
+		}
 		return true;
 	}
 }

@@ -34,6 +34,10 @@ android {
         versionName project.property('samples.versionName')
     }
 
+    dataBinding {
+        enabled = true
+    }
+
     if (project.hasProperty('signing.properties') && new File((String) project.property('signing.properties')).exists()) {
         final Properties properties = new Properties();
         properties.load(new FileInputStream(file(project.property('signing.properties'))))
@@ -78,4 +82,5 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.4.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'universum.studios.android:samples:0.1.1@aar'
+    compile 'universum.studios.android:fragments:1.0.1@aar'
 }

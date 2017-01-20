@@ -24,8 +24,9 @@ import android.support.annotation.NonNull;
 import android.view.View;
 
 /**
- * Saved state implementation like {@link View.BaseSavedState} that should be used by all custom
- * adapters from the UI library and also for theirs derivatives.
+ * Saved state implementation for adapters like {@link View.BaseSavedState} for views. This saved
+ * state class should be used to implement saved states for all adapters that inherit from the adapter
+ * classes from the Widget Adapters library.
  *
  * @author Martin Albedinsky
  */
@@ -49,7 +50,7 @@ public abstract class AdapterSavedState implements Parcelable {
 	 */
 
 	/**
-	 * Empty widget state that should be used as return value for {@link BaseAdapter#onSaveInstanceState()}
+	 * Empty state that should be used as return value for {@link DataSetAdapter#saveInstanceState()}
 	 * whenever that specific adapter does not need to save its state.
 	 */
 	public static final AdapterSavedState EMPTY_STATE = new AdapterSavedState() {};
@@ -83,7 +84,8 @@ public abstract class AdapterSavedState implements Parcelable {
 	 */
 
 	/**
-	 * Super state supplied during initialization of this saved state or its restoring.
+	 * Super state supplied during initialization of this saved state or during its restoring via
+	 * Parcel mechanism.
 	 */
 	private final Parcelable mSuperState;
 
@@ -100,9 +102,9 @@ public abstract class AdapterSavedState implements Parcelable {
 
 	/**
 	 * Should be called by a derived adapter classes when creating theirs SavedState objects to allow
-	 * chaining of those states in {@link BaseAdapter#onSaveInstanceState()}.
+	 * chaining of those states via {@link DataSetAdapter#saveInstanceState()}.
 	 *
-	 * @param superState The state of the superclass of this widget.
+	 * @param superState The state of the super class of the associated adapter.
 	 */
 	protected AdapterSavedState(@NonNull Parcelable superState) {
 		this.mSuperState = superState != EMPTY_STATE ? superState : null;
@@ -133,7 +135,7 @@ public abstract class AdapterSavedState implements Parcelable {
 	/**
 	 * Returns the super state of this saved state.
 	 *
-	 * @return The state supplied to {@link #AdapterSavedState(Parcelable)} or restored in
+	 * @return The state supplied to {@link #AdapterSavedState(Parcelable)} or a restored one via
 	 * {@link #AdapterSavedState(Parcel)}.
 	 */
 	@NonNull

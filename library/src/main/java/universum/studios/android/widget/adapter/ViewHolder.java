@@ -20,11 +20,12 @@ package universum.studios.android.widget.adapter;
 
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.view.ViewGroup;
 
 /**
- * Holder for a single item view of a specific Adapter that can be used to support the optimized
- * <b>holder</b> pattern for {@link android.widget.Adapter#getView(int, View, android.view.ViewGroup)
- * Adapter#getView(int, android.view.View, android.view.ViewGroup)} method.
+ * Holder for a single item view of a specific {@link BaseAdapter} implementation that may be used
+ * to support the optimized <b>holder</b> pattern for {@link BaseAdapter#getView(int, View, ViewGroup)}
+ * method.
  *
  * @author Martin Albedinsky
  */
@@ -52,14 +53,6 @@ public class ViewHolder {
 	 */
 
 	/**
-	 * Constant used to determine that no position has been specified for a particular instance of
-	 * {@link ViewHolder}.
-	 *
-	 * @see #getAdapterPosition()
-	 */
-	public static final int NO_POSITION = -1;
-
-	/**
 	 * Static members ==============================================================================
 	 */
 
@@ -76,7 +69,7 @@ public class ViewHolder {
 	 * Position of an item from associated adapter's data set of which view is hold by this holder
 	 * instance.
 	 */
-	private int mAdapterPosition = NO_POSITION;
+	private int mAdapterPosition = DataSetAdapter.NO_POSITION;
 
 	/**
 	 * Constructors ================================================================================
@@ -109,7 +102,7 @@ public class ViewHolder {
 	 * Returns the current position of this holder instance.
 	 *
 	 * @return The position of item within associated adapter's data set of which view is hold by
-	 * this holder or {@link #NO_POSITION} if no position has been specified yet.
+	 * this holder or {@link DataSetAdapter#NO_POSITION} if no position has been specified yet.
 	 */
 	public final int getAdapterPosition() {
 		return mAdapterPosition;

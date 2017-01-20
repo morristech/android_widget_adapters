@@ -18,12 +18,16 @@
  */
 package universum.studios.android.widget.adapter;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.test.runner.AndroidJUnit4;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Martin Albedinsky
@@ -34,18 +38,42 @@ public final class AdapterSavedStateTest {
 	@SuppressWarnings("unused")
 	private static final String TAG = "AdapterSavedStateTest";
 
-	@Before
-	public void beforeTest() throws Exception {
-		// todo: before each test initialization/set-up
-	}
-
-	@After
-	public void afterTest() throws Exception {
-		// todo: after each test de-initialization/clearing
-	}
-
 	@Test
-	public void test() {
-		// todo:
+	public void testInstantiationWithSuperState() {
+		final SavedState savedState = new SavedState(SavedState.EMPTY_STATE);
+		assertThat(savedState.getSuperState(), is((Parcelable) SavedState.EMPTY_STATE));
+	}
+
+	private static final class SavedState extends AdapterSavedState {
+
+		public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
+
+			@Override
+			public SavedState createFromParcel(@NonNull Parcel source) {
+				return new SavedState(source);
+			}
+
+			@Override
+			public SavedState[] newArray(int size) {
+				return new SavedState[size];
+			}
+		};
+
+		private int count;
+
+		protected SavedState(@NonNull Parcelable superState) {
+			super(superState);
+		}
+
+		SavedState(@NonNull Parcel source) {
+			super(source);
+			this.count = source.readInt();
+		}
+
+		@Override
+		public void writeToParcel(Parcel dest, int flags) {
+			super.writeToParcel(dest, flags);
+			dest.writeInt(count);
+		}
 	}
 }

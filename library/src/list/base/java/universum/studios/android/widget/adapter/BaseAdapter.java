@@ -21,6 +21,7 @@ package universum.studios.android.widget.adapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Parcelable;
+import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,8 +31,8 @@ import android.view.ViewGroup;
 
 /**
  * Extended version of {@link android.widget.BaseAdapter}. This version of BaseAdapter implements
- * optimized algorithm for the {@link #getView(int, View, ViewGroup)} method
- * using the holder pattern as described below:
+ * optimized algorithm for the {@link #getView(int, View, ViewGroup)} method using the holder pattern
+ * as described below:
  * <pre>
  * public class BaseAdapter extends android.widget.BaseAdapter {
  *
@@ -68,89 +69,83 @@ import android.view.ViewGroup;
  * <p>
  * In case when an implementation of this adapter provides item views for data set upon which can be
  * performed a wide set of actions, like marking items as favorite or deleting them using action button
- * placed directly within these item views, this adapter provides simple management which allows to
- * notify the attached {@link universum.studios.android.widget.adapter.OnDataSetActionListener OnDataSetActionListener}
- * to which can be dispatched callback about these actions. This listener can be notified that a
- * particular action has been performed by calling {@link #notifyDataSetActionSelected(int, int, Object)}
- * method with id of the performed action and also allows to pass some additional data for the action.
+ * placed directly within these item views, this adapter provides simple interface which allows to
+ * notify the registered {@link OnDataSetActionListener OnDataSetActionListeners} via
+ * {@link #notifyDataSetActionSelected(int, int, Object)} with identifier of the performed action.
+ * This method also allows to pass some additional payload data for the action.
  *
  * <h3>State saving</h3>
+ * <h3>State saving</h3>
  * <pre>
- * public class MyAdapter extends BaseAdapter&lt;String, View&gt; {
+ * public class SampleAdapter extends BaseAdapter {
  *
- *     // ..
+ *     // ...
  *
  *     &#64;Override
- *     protected Parcelable onSaveInstanceState() {
- *         final MyAdapterState state = new MyAdapterState(super.onSaveInstanceState());
- *
- *         // ..
+ *     public Parcelable saveInstanceState() {
+ *         final SavedState state = new SavedState(super.saveInstanceState());
+ *         // ...
  *         // Pass here all data of this adapter which need to be saved to the state.
- *         // ..
- *
+ *         // ...
  *         return state;
  *     }
  *
  *     &#64;Override
- *     protected void onRestoreInstanceState(Parcelable savedState) {
- *          if (!(savedState instanceof MyAdapterState)) {
+ *     public void restoreInstanceState(Parcelable savedState) {
+ *          if (!(savedState instanceof SavedState)) {
  *              // Passed savedState is not our state, let super to process it.
- *              super.onRestoreInstanceState(savedState);
+ *              super.restoreInstanceState(savedState);
  *              return;
  *          }
- *
- *          final MyAdapterState state = (MyAdapterState) savedState;
+ *          final SavedState state = (SavedState) savedState;
  *          // Pass superState to super to process it.
- *          super.onRestoreInstanceState(state.getSuperState());
- *
- *          // ..
- *          // Set here all data of this adapter which need to be restored from the savedState.
- *          // ..
+ *          super.restoreInstanceState(savedState.getSuperState());
+ *          // ...
+ *          // Set here all data of this adapter which need to be restored from the state.
+ *          // ...
  *     }
  *
- *     // ..
+ *     // ...
  *
- *     // Implementation of WidgetSavedState for this adapter.
- *     static class MyAdapterState extends WidgetSavedState {
+ *     // Implementation of AdapterSavedState for this adapter.
+ *     static class SavedState extends AdapterSavedState {
  *
  *         // Each implementation of saved state need to have its own CREATOR provided.
- *         public static final Creator&lt;MyAdapterState&gt; CREATOR = new Creator&lt;MyAdapterState&gt; {
+ *         public static final Creator&lt;SavedState&gt; CREATOR = new Creator&lt;SavedState&gt;() {
  *
  *              &#64;Override
- *              public MyAdapterState createFromParcel(Parcel source) {
- *                  return new MyAdapterState(source);
+ *              public SavedState createFromParcel(Parcel source) {
+ *                  return new SavedState(source);
  *              }
  *
  *              &#64;Override
- *              public MyAdapterState[] newArray(int size) {
- *                  return new MyAdapterState[size];
+ *              public SavedState[] newArray(int size) {
+ *                  return new SavedState[size];
  *              }
- *         }
+ *         };
  *
- *         MyAdapterState(Parcel source) {
+ *         SavedState(Parcel source) {
  *              super(source);
- *              // Restore state here.
+ *              // Restore here state's data.
  *         }
  *
- *         // Constructor used to chain the state of derived classes.
- *         MyAdapterState(Parcelable superState) {
+ *         // Constructor used to chain the state of inheritance hierarchies.
+ *         SavedState(Parcelable superState) {
  *              super(superState);
  *         }
  *
  *         &#64;Override
  *         public void writeToParcel(Parcel dest, int flags) {
  *              super.writeToParcel(dest, flags);
- *              // Save state here.
+ *              // Save here state's data.
  *         }
  *     }
  * }
  * </pre>
  *
- * @param <Item> A type of the item presented within a data set of a subclass of this BaseAdapter.
- * @param <VH>   A type of the view holder used within a subclass of this BaseAdapter.
+ * @param <Item> Type of the item presented within a data set of a subclass of this BaseAdapter.
+ * @param <VH>   Type of the view holder used within a subclass of this BaseAdapter.
  * @author Martin Albedinsky
- * @see BaseSpinnerAdapter
- * @see SimpleAdapter
  */
 public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter implements DataSetAdapter<Item> {
 
@@ -186,25 +181,19 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	protected final LayoutInflater mLayoutInflater;
 
 	/**
-	 * Application resources.
+	 * Application resources that may be used to obtain strings, texts, drawables, ... and other resources.
 	 */
 	protected final Resources mResources;
 
 	/**
-	 * Item view type for the current {@link #getView(int, View, ViewGroup)}
-	 * iteration.
+	 * Data set handling data specified for this adapter.
 	 */
-	private int mCurrentViewType;
+	final AdapterDataSet<BaseAdapter<Item, VH>, Item> mDataSet;
 
 	/**
-	 * Registered OnDataSetListener callback.
+	 * Item view type for the current {@link #getView(int, View, ViewGroup)} iteration.
 	 */
-	private OnDataSetListener mDataSetListener;
-
-	/**
-	 * Registered OnDataSetActionListener callback.
-	 */
-	private OnDataSetActionListener mDataSetActionListener;
+	int mCurrentViewType;
 
 	/**
 	 * Constructors ================================================================================
@@ -219,6 +208,7 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 		this.mContext = context;
 		this.mLayoutInflater = LayoutInflater.from(context);
 		this.mResources = context.getResources();
+		this.mDataSet = new AdapterDataSet<>(this);
 	}
 
 	/**
@@ -226,113 +216,92 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	 */
 
 	/**
-	 * Saves the current state of this adapter.
-	 *
-	 * @return Saved state of this adapter or an <b>empty</b> state if this adapter does not need to
-	 * save its state.
 	 */
-	@NonNull
-	public Parcelable saveInstanceState() {
-		return onSaveInstanceState();
-	}
-
-	/**
-	 * Invoked immediately after {@link #saveInstanceState()} was called, to save the current state
-	 * of this adapter.
-	 * <p>
-	 * If you decide to override this method, do not forget to call {@code super.onSaveInstanceState()}
-	 * and pass super state obtained from the super to constructor of your saved state implementation
-	 * with such a parameter to ensure the state of all classes along the chain is saved.
-	 *
-	 * @return Instance of adapter's saved state if this adapter saves its state, otherwise no
-	 * implementation of this method is required.
-	 */
-	@NonNull
-	protected Parcelable onSaveInstanceState() {
-		return AdapterSavedState.EMPTY_STATE;
-	}
-
-	/**
-	 * Restores the previous state, saved via {@link #saveInstanceState()}, of this adapter.
-	 *
-	 * @param savedState Should be the same state as obtained via {@link #saveInstanceState()} before.
-	 */
-	public void restoreInstanceState(@NonNull Parcelable savedState) {
-		if (!AdapterSavedState.EMPTY_STATE.equals(savedState)) onRestoreInstanceState(savedState);
-	}
-
-	/**
-	 * Called immediately after {@link #restoreInstanceState(Parcelable)} was called,
-	 * to restore the previous state, (saved in {@link #onSaveInstanceState()}), of this adapter.
-	 * <p>
-	 * <b>Note</b>, that if the saved state passed to {@link #restoreInstanceState(Parcelable)} method
-	 * is {@link AdapterSavedState#EMPTY_STATE} this method will not be invoked.
-	 *
-	 * @param savedState Previously saved state of this adapter.
-	 */
-	protected void onRestoreInstanceState(@NonNull Parcelable savedState) {
+	@Override
+	public void registerOnDataChangeListener(@NonNull OnDataChangeListener listener) {
+		mDataSet.registerOnDataChangeListener(listener);
 	}
 
 	/**
 	 */
 	@Override
-	public void setOnDataSetListener(@Nullable OnDataSetListener listener) {
-		this.mDataSetListener = listener;
+	public void unregisterOnDataChangeListener(@NonNull OnDataChangeListener listener) {
+		mDataSet.unregisterOnDataChangeListener(listener);
 	}
 
 	/**
 	 */
 	@Override
-	public void setOnDataSetActionListener(@Nullable OnDataSetActionListener listener) {
-		this.mDataSetActionListener = listener;
+	public void registerOnDataSetListener(@NonNull OnDataSetListener listener) {
+		mDataSet.registerOnDataSetListener(listener);
 	}
 
 	/**
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void notifyDataSetChanged() {
 		super.notifyDataSetChanged();
-		if (mDataSetListener != null) mDataSetListener.onDataSetChanged(this);
+		mDataSet.notifyDataSetChanged();
 	}
 
 	/**
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void notifyDataSetInvalidated() {
 		super.notifyDataSetInvalidated();
-		if (mDataSetListener != null) mDataSetListener.onDataSetInvalidated(this);
+		mDataSet.notifyDataSetInvalidated();
 	}
 
 	/**
-	 * Notifies, that the given <var>action</var> has been performed for the specified <var>position</var>.
-	 * <p>
-	 * If {@link #onDataSetActionSelected(int, int, Object)} will not process this call, the current
-	 * {@link OnDataSetActionListener} will be notified if it is presented.
-	 *
-	 * @param action   Action to be dispatched.
-	 * @param position The position for which was the given action performed.
-	 * @param data     Additional data for the selected action to be dispatched to the listener.
-	 * @return {@code True} if the action has been handled internally by this adapter or by the
-	 * attached listener, {@code false} otherwise.
 	 */
-	@SuppressWarnings("unchecked")
-	protected boolean notifyDataSetActionSelected(int action, int position, @Nullable Object data) {
-		return onDataSetActionSelected(action, position, data) ||
-				(mDataSetActionListener != null && mDataSetActionListener.onDataSetActionSelected(
-						this, action, position, getItemId(position), data)
-				);
+	@Override
+	public void unregisterOnDataSetListener(@NonNull OnDataSetListener listener) {
+		mDataSet.unregisterOnDataSetListener(listener);
+	}
+
+	/**
+	 */
+	@Override
+	public void registerOnDataSetActionListener(@NonNull OnDataSetActionListener listener) {
+		mDataSet.registerOnDataSetActionListener(listener);
+	}
+
+	/**
+	 * Notifies that the given <var>action</var> has been performed for the specified <var>position</var>.
+	 * <p>
+	 * If {@link #onDataSetActionSelected(int, int, Object)} will not process this call, the registered
+	 * {@link OnDataSetActionListener OnDataSetActionListeners} will be notified.
+	 * <p>
+	 * <b>Note, that invoking this method with 'invalid' position, out of bounds of the current data
+	 * set, will be ignored.</b>
+	 *
+	 * @param action   The action that was selected.
+	 * @param position The position for which was the specified action selected.
+	 * @param payload  Additional payload data for the selected action. May be {@code null} if no
+	 *                 payload has been specified.
+	 * @return {@code True} if the action has been handled internally by this adapter or by one of
+	 * the registers listeners, {@code false} otherwise.
+	 */
+	protected boolean notifyDataSetActionSelected(int action, int position, @Nullable Object payload) {
+		// Do not notify actions for invalid (out of bounds of the current data set) positions.
+		return position >= 0 && position < getItemCount() && mDataSet.notifyDataSetActionSelected(action, position, payload);
 	}
 
 	/**
 	 * Invoked immediately after {@link #notifyDataSetActionSelected(int, int, Object)} was called.
 	 *
-	 * @return {@code True} to indicate that this event was processed here, otherwise the current
-	 * {@link OnDataSetActionListener} will be notified about this event if it is presented.
+	 * @return {@code True} to indicate that this event was processed here, {@code false} to dispatch
+	 * this event to the registered {@link OnDataSetActionListener OnDataSetActionListeners}.
 	 */
-	protected boolean onDataSetActionSelected(int action, int position, @Nullable Object data) {
+	protected boolean onDataSetActionSelected(int action, int position, @Nullable Object payload) {
 		return false;
+	}
+
+	/**
+	 */
+	@Override
+	public void unregisterOnDataSetActionListener(@NonNull OnDataSetActionListener listener) {
+		mDataSet.unregisterOnDataSetActionListener(listener);
 	}
 
 	/**
@@ -346,16 +315,15 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	/**
 	 */
 	@Override
-	public boolean hasItem(int position) {
-		return position >= 0 && position < getItemCount();
+	public long getItemId(int position) {
+		return position;
 	}
 
 	/**
 	 */
 	@Override
-	public long getItemId(int position) {
-		if (!hasStableIds()) return NO_ID;
-		else return position;
+	public boolean hasStableIds() {
+		return false;
 	}
 
 	/**
@@ -364,12 +332,9 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	@SuppressWarnings("unchecked")
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 		Object viewHolder;
-		// Obtain current item view type.
 		this.mCurrentViewType = getItemViewType(position);
 		if (convertView == null) {
-			// Dispatch to create new view.
 			convertView = onCreateView(parent, position);
-			// Resolve holder for the newly created view.
 			final Object holder = onCreateViewHolder(convertView, position);
 			if (holder != null) {
 				convertView.setTag(viewHolder = holder);
@@ -381,13 +346,12 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 			viewHolder = holder != null ? holder : convertView;
 		}
 		ensureViewHolderPosition(viewHolder, position);
-		// Dispatch to bind view holder with data.
 		onBindViewHolder((VH) viewHolder, position);
 		return convertView;
 	}
 
 	/**
-	 * Returns a type of an item's view for the currently iterated position.
+	 * Returns the type of an item's view for the currently iterated position.
 	 *
 	 * @return View type provided by {@link #getItemViewType(int)} for the currently iterated position.
 	 */
@@ -396,7 +360,7 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	}
 
 	/**
-	 * Invoked to create a view for an item from the current data set at the specified position.
+	 * Invoked to create a view for an item from the current data set at the specified <var>position</var>.
 	 * <p>
 	 * This is invoked only if <var>convertView</var> for the specified <var>position</var> in
 	 * {@link #getView(int, View, ViewGroup)} was {@code null}.
@@ -419,28 +383,29 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	 * @see LayoutInflater#inflate(int, ViewGroup)
 	 */
 	@NonNull
-	protected final View inflate(@LayoutRes int resource, @NonNull ViewGroup parent) {
+	protected View inflate(@LayoutRes int resource, @NonNull ViewGroup parent) {
 		return mLayoutInflater.inflate(resource, parent, false);
 	}
 
 	/**
-	 * Invoked to create a view holder for a view of an item from the current data set at the
-	 * specified position.
+	 * Invoked to create a view holder for a view of an item from the current data set at the specified
+	 * <var>position</var>.
 	 * <p>
 	 * This is invoked only if <var>convertView</var> for the specified <var>position</var> in
-	 * {@link #getView(int, View, ViewGroup)} was {@code null}, so as
-	 * view also holder need to be created.
+	 * {@link #getView(int, View, ViewGroup)} was {@code null}, so view along with its corresponding
+	 * holder need to be created.
 	 *
-	 * @param itemView An instance of the same view as obtained from  {@link #onCreateView(ViewGroup, int)}
-	 *                 for the specified position.
+	 * @param itemView The same view as obtained from {@link #onCreateView(ViewGroup, int)} for the
+	 *                 specified position.
 	 * @param position Position of the item from the current data set for which should be a new view
 	 *                 holder created.
-	 * @return New instance of the requested view holder.
+	 * @return New instance of the requested view holder or {@code null} if holder for the view is
+	 * not required.
 	 */
 	@Nullable
 	@SuppressWarnings("unchecked")
 	protected VH onCreateViewHolder(@NonNull View itemView, int position) {
-		// Return null holder, so view created by onCreateView(..) will be passed as holder to onBindView(..).
+		// Return null holder, so view created by onCreateView(...) will be passed as holder to onBindView(...).
 		return null;
 	}
 
@@ -450,29 +415,51 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	 * <b>Note</b>, that position will be updated only for holder instance of {@link ViewHolder}.
 	 *
 	 * @param viewHolder The view holder of which position to update.
-	 * @param position   The position of the holder.
+	 * @param position   The position for the holder.
 	 */
 	final void ensureViewHolderPosition(Object viewHolder, int position) {
-		if (viewHolder instanceof ViewHolder)
+		if (viewHolder instanceof ViewHolder) {
 			((ViewHolder) viewHolder).updateAdapterPosition(position);
+		}
 	}
 
 	/**
-	 * Invoked to set up and populate a view of an item from the current data set at the specified
-	 * position. This is invoked whenever {@link #getView(int, View, ViewGroup)}
-	 * is called.
+	 * Invoked to configure and bind a view of an item from the current data set at the specified
+	 * <var>position</var>. This is invoked whenever {@link #getView(int, View, ViewGroup)} is called.
 	 * <p>
-	 * <b>Note</b>, that if {@link #onCreateViewHolder(View, int)} returns {@code null}
-	 * for the specified <var>position</var> here passed <var>viewHolder</var> will be the view created
-	 * by {@link #onCreateView(ViewGroup, int)} for the specified position or just recycled
-	 * view for such position. This approach can be used, when a view hierarchy of the specific item
-	 * is represented by one custom view, where such a view represents a holder for all its child views.
+	 * <b>Note</b>, that if {@link #onCreateViewHolder(View, int)} returns {@code null} for the
+	 * specified <var>position</var> here passed <var>viewHolder</var> will be the view created by
+	 * {@link #onCreateView(ViewGroup, int)} for the specified position or just recycled view for
+	 * that position. This approach may be used when a view hierarchy of a specific item is represented
+	 * by single custom view, where such view represents a holder for all its child views.
 	 *
-	 * @param viewHolder An instance of the same holder as provided by {@link #onCreateViewHolder(View, int)}
-	 *                   for the specified position or converted view as holder as described above.
-	 * @param position   Position of the item from the current data set of which view to set up.
+	 * @param viewHolder The same holder as provided by {@link #onCreateViewHolder(View, int)} for
+	 *                   the specified position or converted view as holder as described above.
+	 * @param position   Position of the item from the current data set of which view to bind with data.
 	 */
 	protected abstract void onBindViewHolder(@NonNull VH viewHolder, int position);
+
+	/**
+	 * If you decide to override this method, do not forget to call {@code super.saveInstanceState()}
+	 * and pass the obtained super state to the corresponding constructor of your saved state
+	 * implementation to ensure the state of all classes along the chain is properly saved.
+	 */
+	@NonNull
+	@Override
+	@CallSuper
+	public Parcelable saveInstanceState() {
+		return AdapterSavedState.EMPTY_STATE;
+	}
+
+	/**
+	 * If you decide to override this method, do not forget to call {@code super.restoreInstanceState()}
+	 * and pass here the parent state obtained from the your saved state implementation to ensure the
+	 * state of all classes along the chain is properly restored.
+	 */
+	@Override
+	@CallSuper
+	public void restoreInstanceState(@NonNull Parcelable savedState) {
+	}
 
 	/**
 	 * Inner classes ===============================================================================

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools">
+	<data>
+		<variable name="text" type="String"/>
+	</data>
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:minHeight="56dp"
+		android:orientation="horizontal"
+		android:paddingLeft="16dp"
+		android:paddingRight="16dp"
+		android:background="?android:attr/selectableItemBackground">
+
+		<TextView
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="@{text}"
+			tools:text="Item text"/>
+
+		<Button
+			android:id="@+id/action"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:focusable="false"
+			android:focusableInTouchMode="false"
+			android:text="Delete" />
+	</LinearLayout>
+</layout>

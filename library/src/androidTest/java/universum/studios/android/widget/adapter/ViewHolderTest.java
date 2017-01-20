@@ -19,28 +19,45 @@
 package universum.studios.android.widget.adapter;
 
 import android.support.test.runner.AndroidJUnit4;
+import android.view.View;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import universum.studios.android.widget.adapter.inner.BaseTest;
+import universum.studios.android.widget.adapter.inner.ContextBaseTest;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Martin Albedinsky
  */
 @RunWith(AndroidJUnit4.class)
-public final class ViewHolderTest extends BaseTest {
+public final class ViewHolderTest extends ContextBaseTest {
 
 	@SuppressWarnings("unused")
 	private static final String TAG = "ViewHolderTest";
 
+	private View mItemView;
+	private ViewHolder mHolder;
+
 	@Override
 	public void beforeTest() throws Exception {
 		super.beforeTest();
+		this.mItemView = new View(mContext);
+		this.mHolder = new ViewHolder(mItemView);
 	}
 
 	@Test
-	public void test() {
+	public void testInstantiation() {
+		final ViewHolder holder = new ViewHolder(mItemView);
+		assertThat(holder.itemView, is(mItemView));
+		assertThat(holder.getAdapterPosition(), is(DataSetAdapter.NO_POSITION));
+	}
 
+	@Test
+	public void testUpdateAdapterPosition() {
+		mHolder.updateAdapterPosition(13);
+		assertThat(mHolder.getAdapterPosition(), is(13));
 	}
 }

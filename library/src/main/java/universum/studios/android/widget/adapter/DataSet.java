@@ -99,16 +99,6 @@ public interface DataSet<Item> {
 	 */
 	void unregisterOnDataSetActionListener(@NonNull OnDataSetActionListener listener);
 
-	// todo: ???
-	/**
-	 * Returns the current cursor attached to this data set.
-	 *
-	 * @return Current cursor that or {@code null} if there was no cursor attached yet.
-	 * @see #getCursorAt(int)
-	 */
-	/*@Nullable
-	C getCursor();*/
-
 	/**
 	 * Returns a boolean flag indicating whether this data set is empty or not.
 	 *

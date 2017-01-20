@@ -16,13 +16,28 @@
  * See the License for the specific language governing permissions and limitations under the License.
  * =================================================================================================
  */
+package universum.studios.android.samples.widget.adapter.ui;
+
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import universum.studios.android.samples.ui.SamplesFragment;
+import universum.studios.android.samples.widget.adapter.R;
+
 /**
- * Provides extended adapter classes for {@link android.widget.AdapterView AdapterView} and
- * {@link android.support.v7.widget.RecyclerView RecyclerView} with <b>holder-pattern</b> support.
- * <p>
- * This package also contains some useful adapter callbacks that may be used to listen for changes
- * and/or actions occurred in an adapter's data set.
- *
  * @author Martin Albedinsky
  */
-package universum.studios.android.widget.adapter;
+public final class HomeFragment extends SamplesFragment {
+
+	@SuppressWarnings("unused")
+	private static final String TAG = "HomeFragment";
+
+	@Nullable
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.fragment_home, container, false);
+	}
+}

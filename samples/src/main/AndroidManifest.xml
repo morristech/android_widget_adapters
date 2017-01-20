@@ -19,7 +19,7 @@
  * =================================================================================================
  */
 -->
-<manifest package="universum.studios.android.samples.graphics"
+<manifest package="universum.studios.android.samples.widget.adapter"
 		  xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<application
