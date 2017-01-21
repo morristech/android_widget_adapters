@@ -31,6 +31,8 @@ import universum.studios.android.fragment.transition.FragmentTransitions;
 import universum.studios.android.samples.ui.SamplesNavigationActivity;
 import universum.studios.android.samples.widget.adapter.R;
 import universum.studios.android.samples.widget.adapter.ui.list.ListFragment;
+import universum.studios.android.samples.widget.adapter.ui.module.header.HeadersModuleFragment;
+import universum.studios.android.samples.widget.adapter.ui.module.slection.SelectionModuleFragment;
 import universum.studios.android.samples.widget.adapter.ui.recycler.RecyclerFragment;
 import universum.studios.android.samples.widget.adapter.ui.spinner.SpinnerFragment;
 
@@ -75,6 +77,12 @@ public final class MainActivity extends SamplesNavigationActivity implements Fra
 				return true;
 			case R.id.navigation_item_spinner:
 				fragmentController.newRequest(new SpinnerFragment()).execute();
+				return true;
+			case R.id.navigation_item_module_selection:
+				fragmentController.newRequest(new SelectionModuleFragment()).execute();
+				return true;
+			case R.id.navigation_item_module_headers:
+				fragmentController.newRequest(new HeadersModuleFragment()).execute();
 				return true;
 		}
 		return true;

@@ -23,32 +23,39 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 /**
- * todo: description
+ * A {@link DataSetAdapter} interface extension for simple adapters that provide set of items
+ * as theirs data set.
  *
  * @author Martin Albedinsky
  */
 public interface ItemsAdapter<Item> extends DataSetAdapter<Item> {
 
 	/**
-	 * todo:
+	 * Same as {@link #swapItems(List)} without returning the old data set of items.
 	 *
-	 * @param items
+	 * @param items The desired items to be changed. May be {@code null} to clear the current ones.
+	 * @see #getItems()
 	 */
 	void changeItems(@Nullable List<Item> items);
 
 	/**
-	 * todo:
+	 * Changes items data set of this adapter and returns the old items data set.
 	 *
-	 * @param items
-	 * @return
+	 * @param items The desired items to be changed. May be {@code null} to clear the current ones.
+	 * @return The old items data set or {@code null} if this adapter does not have items data set
+	 * specified.
+	 * @see #getItems()
 	 */
 	@Nullable
 	List<Item> swapItems(@Nullable List<Item> items);
 
 	/**
-	 * todo:
+	 * Returns the current items data set of this adapter.
 	 *
-	 * @return
+	 * @return This adapter's items data set or {@code null} if there is no items data set provided
+	 * by this adapter.
+	 * @see #changeItems(List)
+	 * @see #swapItems(List)
 	 */
 	@Nullable
 	List<Item> getItems();

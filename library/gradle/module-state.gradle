@@ -21,9 +21,9 @@
  */
 android {
     sourceSets {
-        main.manifest.srcFile 'src/module/core/AndroidManifest.xml'
+        main.manifest.srcFile 'src/state/AndroidManifest.xml'
         main.java.srcDirs = [
-                'src/module/core/java'
+                'src/state/java'
         ]
     }
 }
@@ -32,5 +32,5 @@ android {
  * Library Module dependencies =====================================================================
  */
 dependencies {
-    compile 'universum.studios.android:widget-adapters-state:1.0.0@aar'
+    // None.
 }

@@ -33,5 +33,8 @@ android {
  * Library Module dependencies =====================================================================
  */
 dependencies {
-    compile 'universum.studios.android:adapters-core:1.0.0@aar'
+    final String supportVersion = project.property('android.support.version')
+    compile 'com.android.support:recyclerview-v7:' + supportVersion
+    compile 'universum.studios.android:widget-adapters-core:1.0.0@aar'
+    compile 'universum.studios.android:widget-adapters-state:1.0.0@aar'
 }

@@ -30,17 +30,22 @@
 
 		<item
 			android:id="@+id/navigation_item_recycler"
-			android:checked="true"
 			android:title="@string/navigation_item_recycler"/>
 
 		<item
 			android:id="@+id/navigation_item_list"
-			android:checked="true"
 			android:title="@string/navigation_item_list"/>
 
 		<item
 			android:id="@+id/navigation_item_spinner"
-			android:checked="true"
 			android:title="@string/navigation_item_spinner"/>
+
+		<item
+			android:id="@+id/navigation_item_module_selection"
+			android:title="@string/navigation_item_module_selection"/>
+
+		<item
+			android:id="@+id/navigation_item_module_headers"
+			android:title="@string/navigation_item_module_headers"/>
 	</group>
 </menu>

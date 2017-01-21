@@ -31,4 +31,11 @@
 	<string name="navigation_item_recycler">Recycler Adapter</string>
 	<string name="navigation_item_list">List Adapter</string>
 	<string name="navigation_item_spinner">Spinner Adapter</string>
+	<string name="navigation_item_module_selection">Selection Adapter</string>
+	<string name="navigation_item_module_headers">Alphabetic Headers Adapter</string>
+
+	<!-- ### SELECTION ========================================================================= -->
+
+	<string name="selection_single">Single</string>
+	<string name="selection_multiple">Multiple</string>
 </resources>

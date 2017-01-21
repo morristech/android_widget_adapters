@@ -25,13 +25,13 @@ import android.text.TextUtils;
 import java.util.List;
 
 /**
- * A {@link universum.studios.android.widget.adapter.module.HeadersModule HeadersModule}
- * implementation which can be used to provide set of alphabetic headers for the current data set
- * of the adapter to which is this module attached.
+ * A {@link HeadersModule} implementation which may be used to provide set of alphabetic headers for
+ * data set of a specific adapter to which is this module attached.
  * <p>
- * Alphabetic headers are generated whenever {@link #processAlphabeticList(List)} or
- * {@link #processAlphabeticCursor(Cursor)} is called. <b>Note, that this module
- * assumes, that the processing data set is already ordered alphabetically.</b>
+ * Alphabetic headers are generated whenever one of {@link #fromAlphabeticList(List)} and
+ * {@link #fromAlphabeticCursor(Cursor)} methods is called.
+ * <p>
+ * <b>Note, that this module assumes, that the data set to be processed is already ordered alphabetically.</b>
  *
  * @author Martin Albedinsky
  */
@@ -42,20 +42,20 @@ public class AlphabeticHeaders extends HeadersModule<HeadersModule.SimpleHeader>
 	 */
 
 	/**
-	 * Required interface for item which can be processed by {@link universum.studios.android.widget.adapter.module.AlphabeticHeaders}
-	 * module.
+	 * Required interface for item of which data set can be processed via {@link #fromAlphabeticList(List)}
+	 * or {@link #fromAlphabeticCursor(Cursor)}.
 	 *
 	 * @author Martin Albedinsky
 	 */
 	public interface AlphabeticItem {
 
 		/**
-		 * Returns name of this alphabetic item.
+		 * Returns text of this alphabetic item.
 		 *
-		 * @return This item's name.
+		 * @return This item's text.
 		 */
 		@NonNull
-		String getName();
+		CharSequence getText();
 	}
 
 	/**
@@ -76,11 +76,11 @@ public class AlphabeticHeaders extends HeadersModule<HeadersModule.SimpleHeader>
 	 */
 
 	/**
-	 * Char which was lastly processed from the current alphabetic data set.
+	 * Letter that was lastly processed from the current alphabetic data set.
 	 * <p>
-	 * This is only for internal purpose.
+	 * This is variable holds only temporary value used in {@link #onProcessAlphabeticItem(AlphabeticItem, int)}.
 	 */
-	private String mLastChar = "";
+	private String mLastProcessedLetter = "";
 
 	/**
 	 * Constructors ================================================================================
@@ -91,80 +91,69 @@ public class AlphabeticHeaders extends HeadersModule<HeadersModule.SimpleHeader>
 	 */
 
 	/**
-	 */
-	@Override
-	public void clearHeaders() {
-		super.clearHeaders();
-		this.resetLastChar();
-	}
-
-	/**
-	 * Like {@link #processAlphabeticList(List)} in that difference, that here will be the
-	 * given cursor iterated to obtain first characters for headers data set.
+	 * Like {@link #fromAlphabeticList(List)} for the given <var>cursor</var> of which content
+	 * will be iterated to obtain the item names.
 	 *
-	 * @param cursor An alphabetic cursor to process.
-	 * @param <C>    A type of the given alphabetic cursor.
+	 * @param cursor The desired cursor with content for alphabetic items to process.
+	 * @param <C>    Type of the alphabetic cursor.
 	 */
-	public <C extends Cursor & AlphabeticItem> void processAlphabeticCursor(@NonNull C cursor) {
+	public <C extends Cursor & AlphabeticItem> void fromAlphabeticCursor(@NonNull C cursor) {
 		clearHeaders();
 		if (cursor.getCount() > 0 && cursor.moveToFirst()) {
 			do {
-				this.processAlphabeticItem(cursor, cursor.getPosition());
+				this.onProcessAlphabeticItem(cursor, cursor.getPosition());
 			} while (cursor.moveToNext());
 		}
 		notifyAdapter();
 	}
 
 	/**
-	 * Processes the given list of alphabetic items. Whole list will be iterated and for each of its
-	 * items will be checked the first char of name provided by
-	 * {@link AlphabeticHeaders.AlphabeticItem#getName()},
-	 * so created headers data set will contains all different first characters founded at the
-	 * first positions of obtained names.
+	 * Processes the given list of alphabetic items. Entire list will be iterated and for each of its
+	 * items will be checked the first char of name provided via @link AlphabeticHeaders.AlphabeticItem#getText()},
+	 * so created headers data set will contain all different first characters found at the first
+	 * positions of the obtained item names.
 	 * <p>
-	 * Also, the adapter, to which is this module attached, will be notified about data set change.
+	 * Also, the adapter, to which is this module attached, will be notified about occurred data set
+	 * change via {@link #notifyAdapter()}.
 	 * <p>
-	 * <b>Note</b>, that the given <var>cursor</var> should be already sorted, otherwise the final
-	 * headers data set can contain duplicates.
+	 * <b>Note</b>, that items in the given <var>list</var> should be already alphabetically sorted,
+	 * otherwise the resulting headers data set may contain duplicates.
 	 *
-	 * @param list Alphabetic list to process.
-	 * @see #processAlphabeticCursor(Cursor)
+	 * @param list   The desired list of alphabetic items to process.
+	 * @param <Item> Type of the alphabetic items in the list.
+	 * @see #fromAlphabeticCursor(Cursor)
 	 */
-	public void processAlphabeticList(@NonNull List<AlphabeticItem> list) {
-		// Clear current headers.
+	public <Item extends AlphabeticItem> void fromAlphabeticList(@NonNull List<Item> list) {
 		clearHeaders();
-		// Process the given list.
 		for (int i = 0; i < list.size(); i++) {
-			this.processAlphabeticItem(list.get(i), i);
+			this.onProcessAlphabeticItem(list.get(i), i);
 		}
 		notifyAdapter();
 	}
 
 	/**
-	 * Process the given alphabetic <var>item</var> and creates header item from it.
-	 * <p>
-	 * <b>Note</b>, that there is no check for the same headers within the current set of headers.
+	 */
+	@Override
+	public void clearHeaders() {
+		super.clearHeaders();
+		this.mLastProcessedLetter = "";
+	}
+
+	/**
+	 * Invoked to process the given alphabetic <var>item</var> and to create header item from it.
 	 *
 	 * @param item     An alphabetic item to process.
 	 * @param position The position at which should be header presented within the headers data set.
 	 */
-	protected final void processAlphabeticItem(@NonNull AlphabeticItem item, int position) {
-		final String name = item.getName();
+	protected final void onProcessAlphabeticItem(@NonNull AlphabeticItem item, int position) {
+		final String name = item.getText().toString();
 		if (!TextUtils.isEmpty(name)) {
-			// Obtain first char from item name.
-			String currentChar = name.substring(0, 1);
-			if (!currentChar.equals(mLastChar)) {
-				addHeader(new SimpleHeader(currentChar), size() + position);
+			final String firstLetter = name.substring(0, 1);
+			if (!firstLetter.equals(mLastProcessedLetter)) {
+				addHeader(new SimpleHeader(firstLetter), size() + position);
 			}
-			this.mLastChar = currentChar;
+			this.mLastProcessedLetter = firstLetter;
 		}
-	}
-
-	/**
-	 * Resets value of the current last char.
-	 */
-	private void resetLastChar() {
-		this.mLastChar = "";
 	}
 
 	/**

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools">
+	<data>
+		<variable name="text" type="String"/>
+	</data>
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:minHeight="40dp"
+		android:paddingLeft="16dp"
+		android:paddingRight="16dp"
+		android:gravity="center_vertical"
+		android:text="@{text}"
+		android:textStyle="bold"
+		android:textColor="?attr/colorAccent"
+		tools:text="Item text" />
+</layout>

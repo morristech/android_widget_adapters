@@ -50,7 +50,7 @@ public abstract class AdapterSavedState implements Parcelable {
 	 */
 
 	/**
-	 * Empty state that should be used as return value for {@link DataSetAdapter#saveInstanceState()}
+	 * Empty state that should be used as return value for {@code Adapter#saveInstanceState()}
 	 * whenever that specific adapter does not need to save its state.
 	 */
 	public static final AdapterSavedState EMPTY_STATE = new AdapterSavedState() {};
@@ -64,7 +64,7 @@ public abstract class AdapterSavedState implements Parcelable {
 		 */
 		@Override
 		public AdapterSavedState createFromParcel(@NonNull Parcel source) {
-			final Parcelable superState = source.readParcelable(AdaptersConfig.class.getClassLoader());
+			final Parcelable superState = source.readParcelable(AdapterSavedState.class.getClassLoader());
 			if (superState != null) {
 				throw new IllegalStateException("superState must be null");
 			}
@@ -102,7 +102,7 @@ public abstract class AdapterSavedState implements Parcelable {
 
 	/**
 	 * Should be called by a derived adapter classes when creating theirs SavedState objects to allow
-	 * chaining of those states via {@link DataSetAdapter#saveInstanceState()}.
+	 * chaining of those states via {@code Adapter#saveInstanceState()}.
 	 *
 	 * @param superState The state of the super class of the associated adapter.
 	 */
@@ -117,7 +117,7 @@ public abstract class AdapterSavedState implements Parcelable {
 	 * @param source Source parcel for the new instance.
 	 */
 	protected AdapterSavedState(@NonNull Parcel source) {
-		final Parcelable superState = source.readParcelable(AdaptersConfig.class.getClassLoader());
+		final Parcelable superState = source.readParcelable(AdapterSavedState.class.getClassLoader());
 		this.mSuperState = superState != null ? superState : EMPTY_STATE;
 	}
 
@@ -128,7 +128,7 @@ public abstract class AdapterSavedState implements Parcelable {
 	/**
 	 */
 	@Override
-	public void writeToParcel(Parcel dest, int flags) {
+	public void writeToParcel(@NonNull Parcel dest, int flags) {
 		dest.writeParcelable(mSuperState, flags);
 	}
 

@@ -53,18 +53,18 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 * flagging.
 	 */
 	@IntDef(flag = true, value = {
-			LISTENER_CHANGE,
+			LISTENER_DATA_CHANGE,
 			LISTENER_DATA_SET,
 			LISTENER_DATA_SET_ACTION
 	})
 	@Retention(RetentionPolicy.SOURCE)
-	@interface Listener {
+	public @interface Listener {
 	}
 
 	/**
 	 * Flag used to identify {@link OnDataChangeListener}.
 	 */
-	static final int LISTENER_CHANGE = 0x00000001;
+	static final int LISTENER_DATA_CHANGE = 0x00000001;
 
 	/**
 	 * Flag used to identify {@link OnDataSetListener}.
@@ -79,7 +79,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	/**
 	 * Flag grouping all listener flags defined by {@link Listener @Listener} annotation.
 	 */
-	private static final int LISTENER_ALL = LISTENER_CHANGE | LISTENER_DATA_SET | LISTENER_DATA_SET_ACTION;
+	private static final int LISTENER_ALL = LISTENER_DATA_CHANGE | LISTENER_DATA_SET | LISTENER_DATA_SET_ACTION;
 
 	/**
 	 * Defines an annotation for determining set of flags that may be used for listener callbacks
@@ -93,7 +93,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 			CALLBACK_DATA_SET_ACTION_SELECTED
 	})
 	@Retention(RetentionPolicy.SOURCE)
-	@interface ListenerCallback {
+	public @interface ListenerCallback {
 	}
 
 	/**
@@ -234,7 +234,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 */
 	@SuppressWarnings("unchecked")
 	void notifyDataChange(Object data) {
-		if ((mEnabledListeners & LISTENER_CHANGE) == 0 || (mEnabledListenerCallbacks & CALLBACK_DATA_CHANGE) == 0) {
+		if ((mEnabledListeners & LISTENER_DATA_CHANGE) == 0 || (mEnabledListenerCallbacks & CALLBACK_DATA_CHANGE) == 0) {
 			return;
 		}
 		if (mDataChangeListeners != null && !mDataChangeListeners.isEmpty()) {
@@ -253,7 +253,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 */
 	@SuppressWarnings("unchecked")
 	void notifyDataChanged(Object data) {
-		if ((mEnabledListeners & LISTENER_CHANGE) == 0 || (mEnabledListenerCallbacks & CALLBACK_DATA_CHANGED) == 0) {
+		if ((mEnabledListeners & LISTENER_DATA_CHANGE) == 0 || (mEnabledListenerCallbacks & CALLBACK_DATA_CHANGED) == 0) {
 			return;
 		}
 		if (mDataChangeListeners != null && !mDataChangeListeners.isEmpty()) {

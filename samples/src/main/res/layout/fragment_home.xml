@@ -9,5 +9,5 @@
 		android:layout_gravity="center"
 		android:layout_margin="16dp"
 		android:gravity="center"
-		android:text="Welcome to the Widget Adapters samples APP." />
+		android:text="Welcome to the Widget Adapters sample APP." />
 </FrameLayout>

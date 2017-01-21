@@ -81,6 +81,7 @@ import android.view.ViewGroup;
  *
  *     // ...
  *
+ *     &#64;NonNull
  *     &#64;Override
  *     public Parcelable saveInstanceState() {
  *         final SavedState state = new SavedState(super.saveInstanceState());
@@ -91,7 +92,7 @@ import android.view.ViewGroup;
  *     }
  *
  *     &#64;Override
- *     public void restoreInstanceState(Parcelable savedState) {
+ *     public void restoreInstanceState(&#64;NonNull Parcelable savedState) {
  *          if (!(savedState instanceof SavedState)) {
  *              // Passed savedState is not our state, let super to process it.
  *              super.restoreInstanceState(savedState);
@@ -114,7 +115,7 @@ import android.view.ViewGroup;
  *         public static final Creator&lt;SavedState&gt; CREATOR = new Creator&lt;SavedState&gt;() {
  *
  *              &#64;Override
- *              public SavedState createFromParcel(Parcel source) {
+ *              public SavedState createFromParcel(&#64;NonNull Parcel source) {
  *                  return new SavedState(source);
  *              }
  *
@@ -124,18 +125,18 @@ import android.view.ViewGroup;
  *              }
  *         };
  *
- *         SavedState(Parcel source) {
+ *         // Constructor used to chain the state of inheritance hierarchies.
+ *         SavedState(&#64;NonNull Parcelable superState) {
+ *              super(superState);
+ *         }
+ *
+ *         SavedState(&#64;NonNull Parcel source) {
  *              super(source);
  *              // Restore here state's data.
  *         }
  *
- *         // Constructor used to chain the state of inheritance hierarchies.
- *         SavedState(Parcelable superState) {
- *              super(superState);
- *         }
- *
  *         &#64;Override
- *         public void writeToParcel(Parcel dest, int flags) {
+ *         public void writeToParcel(&#64;NonNull Parcel dest, int flags) {
  *              super.writeToParcel(dest, flags);
  *              // Save here state's data.
  *         }
@@ -284,7 +285,10 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	 */
 	protected boolean notifyDataSetActionSelected(int action, int position, @Nullable Object payload) {
 		// Do not notify actions for invalid (out of bounds of the current data set) positions.
-		return position >= 0 && position < getItemCount() && mDataSet.notifyDataSetActionSelected(action, position, payload);
+		return position >= 0 && position < getItemCount() && (
+						onDataSetActionSelected(action, position, payload) ||
+						mDataSet.notifyDataSetActionSelected(action, position, payload)
+		);
 	}
 
 	/**
@@ -440,9 +444,6 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	protected abstract void onBindViewHolder(@NonNull VH viewHolder, int position);
 
 	/**
-	 * If you decide to override this method, do not forget to call {@code super.saveInstanceState()}
-	 * and pass the obtained super state to the corresponding constructor of your saved state
-	 * implementation to ensure the state of all classes along the chain is properly saved.
 	 */
 	@NonNull
 	@Override
@@ -452,9 +453,6 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	}
 
 	/**
-	 * If you decide to override this method, do not forget to call {@code super.restoreInstanceState()}
-	 * and pass here the parent state obtained from the your saved state implementation to ensure the
-	 * state of all classes along the chain is properly restored.
 	 */
 	@Override
 	@CallSuper

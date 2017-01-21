@@ -33,6 +33,7 @@ android {
                 'src/module/core/java',
                 'src/module/header/java',
                 'src/module/selection/java',
+                'src/state/java',
                 'src/wrapper/java'
         ]
     }

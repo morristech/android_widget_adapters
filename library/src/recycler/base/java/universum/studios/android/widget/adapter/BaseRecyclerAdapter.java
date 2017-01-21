@@ -37,7 +37,6 @@ import android.view.ViewGroup;
  * @param <Item> Type of the item presented within a data set of a subclass of this BaseRecyclerAdapter.
  * @param <VH>   Type of the view holder used within a subclass of this BaseRecyclerAdapter.
  * @author Martin Albedinsky
- * @see SimpleRecyclerAdapter
  */
 public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> implements DataSetAdapter<Item> {
 
@@ -195,7 +194,10 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 	 */
 	protected boolean notifyDataSetActionSelected(int action, int position, @Nullable Object payload) {
 		// Do not notify actions for invalid (out of bounds of the current data set) positions.
-		return position >= 0 && position < getItemCount() && mDataSet.notifyDataSetActionSelected(action, position, payload);
+		return position >= 0 && position < getItemCount() && (
+						onDataSetActionSelected(action, position, payload) ||
+						mDataSet.notifyDataSetActionSelected(action, position, payload)
+		);
 	}
 
 	/**
@@ -260,9 +262,6 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 	public abstract void onBindViewHolder(@NonNull VH viewHolder, int position);
 
 	/**
-	 * If you decide to override this method, do not forget to call {@code super.saveInstanceState()}
-	 * and pass the obtained super state to the corresponding constructor of your saved state
-	 * implementation to ensure the state of all classes along the chain is properly saved.
 	 */
 	@NonNull
 	@Override
@@ -272,9 +271,6 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 	}
 
 	/**
-	 * If you decide to override this method, do not forget to call {@code super.restoreInstanceState()}
-	 * and pass here the parent state obtained from the your saved state implementation to ensure the
-	 * state of all classes along the chain is properly restored.
 	 */
 	@Override
 	@CallSuper

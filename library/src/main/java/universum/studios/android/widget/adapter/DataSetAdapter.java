@@ -49,6 +49,10 @@ public interface DataSetAdapter<Item> extends DataSet<Item> {
 
 	/**
 	 * Saves the current state of this adapter.
+	 * <p>
+	 * If you decide to override this method, do not forget to call {@code super.saveInstanceState()}
+	 * and pass the obtained super state to the corresponding constructor of your saved state
+	 * implementation to ensure the state of all classes along the chain is properly saved.
 	 *
 	 * @return Saved state of this adapter or an <b>empty</b> state if this adapter does not need to
 	 * save its state.
@@ -58,6 +62,10 @@ public interface DataSetAdapter<Item> extends DataSet<Item> {
 
 	/**
 	 * Restores the previous state, saved via {@link #saveInstanceState()}, of this adapter.
+	 * <p>
+	 * If you decide to override this method, do not forget to call {@code super.restoreInstanceState(Parcelable)}
+	 * and pass there the parent state obtained from your saved state implementation to ensure the
+	 * state of all classes along the chain is properly restored.
 	 *
 	 * @param savedState Should be the same state as obtained via {@link #saveInstanceState()} before.
 	 */

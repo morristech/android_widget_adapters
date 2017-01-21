@@ -1,9 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
 /*
  * =================================================================================================
  *                             Copyright (C) 2017 Universum Studios
  * =================================================================================================
  *         Licensed under the Apache License, Version 2.0 or later (further "License" only).
- * -------------------------------------------------------------------------------------------------
+ * *************************************************************************************************
  * You may use this file only in compliance with the License. More details and copy of this License
  * you may obtain at
  *
@@ -16,21 +18,18 @@
  * See the License for the specific language governing permissions and limitations under the License.
  * =================================================================================================
  */
-/**
- * Library Module options ==========================================================================
- */
-android {
-    sourceSets {
-        main.manifest.srcFile 'src/module/core/AndroidManifest.xml'
-        main.java.srcDirs = [
-                'src/module/core/java'
-        ]
-    }
-}
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-/**
- * Library Module dependencies =====================================================================
- */
-dependencies {
-    compile 'universum.studios.android:widget-adapters-state:1.0.0@aar'
-}
+	<group android:checkableBehavior="single">
+
+		<item
+			android:id="@+id/selection_single"
+			android:checked="true"
+			android:title="@string/selection_single" />
+
+		<item
+			android:id="@+id/selection_multiple"
+			android:title="@string/selection_multiple" />
+	</group>
+</menu>

@@ -32,6 +32,7 @@ android {
  * Library Module dependencies =====================================================================
  */
 dependencies {
-    compile 'universum.studios.android:adapters-core:1.0.0@aar'
-    compile 'universum.studios.android:adapters-list-base:1.0.0@aar'
+    compile 'universum.studios.android:widget-adapters-core:1.0.0@aar'
+    compile 'universum.studios.android:widget-adapters-state:1.0.0@aar'
+    compile 'universum.studios.android:widget-adapters-list-base:1.0.0@aar'
 }

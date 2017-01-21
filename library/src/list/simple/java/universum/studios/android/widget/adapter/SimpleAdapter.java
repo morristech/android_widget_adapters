@@ -115,14 +115,34 @@ public abstract class SimpleAdapter<Item, VH> extends BaseAdapter<Item, VH> impl
 		if (items != null) {
 			mDataSet.notifyDataChange(items);
 			mDataSet.attachData(items);
-			notifyDataSetChanged();
+			if (!onItemsChange(items, oldData)) {
+				notifyDataSetChanged();
+			}
 		} else {
 			mDataSet.notifyDataChange(null);
 			mDataSet.attachData(null);
-			notifyDataSetChanged();
+			if (!onItemsChange(null, oldData)) {
+				notifyDataSetChanged();
+			}
 		}
 		mDataSet.notifyDataChanged(items);
 		return oldData;
+	}
+
+	/**
+	 * Called from {@link #swapItems(List)} in order to handle change in items of this adapter.
+	 * <p>
+	 * <b>Note</b>, that during this call this adapter has already the new items attached.
+	 * <p>
+	 * This implementation does nothing.
+	 *
+	 * @param newItems The new items data set for this adapter.
+	 * @param oldItems The old items data set of this adapter that has been replaced by the new one.
+	 * @return {@code True} if change has been handled and appropriate callbacks has been fired to
+	 * registered observers, {@code false} if default {@link #notifyDataSetChanged()} should be invoked.
+	 */
+	protected boolean onItemsChange(@Nullable List<Item> newItems, @Nullable List<Item> oldItems) {
+		return false;
 	}
 
 	/**

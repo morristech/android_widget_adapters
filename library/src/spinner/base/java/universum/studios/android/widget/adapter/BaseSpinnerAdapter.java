@@ -31,9 +31,9 @@ import android.view.ViewGroup;
  * stored whenever {@link #getView(int, View, ViewGroup)} is called. The selected item position may
  * be obtained via {@link #getSelectedItemPosition()}.
  *
- * @param <Item> A type of the item presented within a data set of a subclass of this BaseSpinnerAdapter.
- * @param <VH>   A type of the view holder used within a subclass of this BaseSpinnerAdapter.
- * @param <DVH>  A type of the drop down view holder used within a subclass of this BaseSpinnerAdapter.
+ * @param <Item> Type of the item presented within a data set of a subclass of this BaseSpinnerAdapter.
+ * @param <VH>   Type of the view holder used within a subclass of this BaseSpinnerAdapter.
+ * @param <DVH>  Type of the drop down view holder used within a subclass of this BaseSpinnerAdapter.
  * @author Martin Albedinsky
  */
 public abstract class BaseSpinnerAdapter<Item, VH, DVH> extends BaseAdapter<Item, VH> {

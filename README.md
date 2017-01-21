@@ -7,7 +7,7 @@ Download the latest **[release](https://github.com/universum-studios/android_wid
 
 ### Gradle ###
 
-    COMING SOON
+    compile 'universum.studios.android:widget-adapters:1.0.0@aar'
 
 ## Compatibility ##
 

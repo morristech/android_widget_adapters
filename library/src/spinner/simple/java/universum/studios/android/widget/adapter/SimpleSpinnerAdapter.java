@@ -37,7 +37,7 @@ import java.util.List;
  * view are the same, if not also {@link #onCreateDropDownView(android.view.ViewGroup, int)} and
  * {@link #onBindDropDownViewHolder(Object, int)} need to be implemented as well.
  *
- * @param <Item> Tpe of the item presented within a data set of a subclass of this SimpleSpinnerAdapter.
+ * @param <Item> Type of the item presented within a data set of a subclass of this SimpleSpinnerAdapter.
  * @param <VH>   Type of the view holder used within a subclass of this SimpleSpinnerAdapter.
  * @param <DVH>  Type of the drop down view holder used within a subclass of this SimpleSpinnerAdapter.
  * @author Martin Albedinsky
@@ -120,14 +120,34 @@ public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAda
 		if (items != null) {
 			mDataSet.notifyDataChange(items);
 			mDataSet.attachData(items);
-			notifyDataSetChanged();
+			if (!onItemsChange(items, oldData)) {
+				notifyDataSetChanged();
+			}
 		} else {
 			mDataSet.notifyDataChange(null);
 			mDataSet.attachData(null);
-			notifyDataSetChanged();
+			if (!onItemsChange(null, oldData)) {
+				notifyDataSetChanged();
+			}
 		}
 		mDataSet.notifyDataChanged(items);
 		return oldData;
+	}
+
+	/**
+	 * Called from {@link #swapItems(List)} in order to handle change in items of this adapter.
+	 * <p>
+	 * <b>Note</b>, that during this call this adapter has already the new items attached.
+	 * <p>
+	 * This implementation does nothing.
+	 *
+	 * @param newItems The new items data set for this adapter.
+	 * @param oldItems The old items data set of this adapter that has been replaced by the new one.
+	 * @return {@code True} if change has been handled and appropriate callbacks has been fired to
+	 * registered observers, {@code false} if default {@link #notifyDataSetChanged()} should be invoked.
+	 */
+	protected boolean onItemsChange(@Nullable List<Item> newItems, @Nullable List<Item> oldItems) {
+		return false;
 	}
 
 	/**

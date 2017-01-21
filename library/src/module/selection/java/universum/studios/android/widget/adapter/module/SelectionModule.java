@@ -20,55 +20,62 @@ package universum.studios.android.widget.adapter.module;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import universum.studios.android.widget.adapter.AdapterSavedState;
 
 /**
- * An {@link AdapterModule AdapterModule}
- * implementation which can be used to support selection within the adapter.
+ * An {@link AdapterModule AdapterModule} implementation that specifies API to support selection
+ * feature for the associated adapter.
  * <p>
- * This module supports both, {@link #SINGLE} and {@link #MULTIPLE} selection modes.
- * The selection mode can be changed by {@link #setMode(int)}.
+ * This module supports both, {@link #SINGLE} and {@link #MULTIPLE} selection modes. The desired
+ * selection mode may be changed via {@link #setMode(int)} and obtained via {@link #getMode()}.
  * <p>
- * Hosting adapter needs to dispatch this module whether an item at with a specific id has been
- * selected or not using {@link #toggleSelection(long)} or calling directly {@link #setSelected(long, boolean)}.
- * To obtain currently selected single id call {@link #getSelectedId()} and to obtain currently
- * selected multiple ids call {@link #getSelectedIds()}. The code sample belows shows basic usage of
- * this module within adapter:
+ * The associated adapter is required to dispatch to this module desired selection changes either via
+ * {@link #toggleSelection(long)} or via {@link #setSelected(long, boolean)} methods. Initial selection
+ * may be specified via {@link #setSelection(List)}. The current selection (selected ids) may be obtained
+ * via {@link #getSelection()} where in {@link #SINGLE} selection mode the returned array will contain
+ * only single item. The code snippet below shows basic usage of this module within an adapter:
  * <pre>
- * public class MyAdapter extends BaseAdapter {
+ * public class SampleAdapter extends BaseAdapter implements ModuleAdapter {
  *
  *      // Selection module providing selection feature for this adapter.
  *      private SelectionModule mSelectionModule;
  *
- *      // other adapter's members ...
+ *      // ...
  *
- *      public MyAdapter(@NonNull Context context) {
+ *      public SampleAdapter(&#64;NonNull Context context) {
  *          super(context);
  *          this.mSelectionModule = new SelectionModule();
  *          this.mSelectionModule.setMode(SelectionModule.MULTIPLE);
  *          this.mSelectionModule.attachToAdapter(this);
  *      }
  *
- *      // Call this from OnItemClickListener.onItemClick(AdapterView, View, int, long) callback.
  *      public void toggleItemSelection(long id) {
  *          mSelectionModule.toggleSelection(id);
  *          // no need to call notifyDataSetChanged() if adapter auto notification is enabled
  *      }
  *
  *      &#64;NonNull
- *      protected void onBindViewHolder(@NonNull Object viewHolder, int position) {
+ *      public List&lt;Long&gt; getSelection() {
+ *          return mSelectionModule.getSelection();
+ *      }
+ *
+ *      &#64;NonNull
+ *      protected void onBindViewHolder(&#64;NonNull Object viewHolder, int position) {
  *          // Use mSelectionModule.isSelected(getItemId(position)) to check if item is selected or not.
  *      }
  *
- *      // other adapter's specific methods ...
+ *      // ...
  * }
  * </pre>
  *
@@ -90,7 +97,13 @@ public class SelectionModule extends AdapterModule {
 	// private static final String TAG = "SelectionModule";
 
 	/**
-	 * Defines an annotation for determining set of allowed modes for {@link #setMode(int)} method.
+	 * Defines an annotation for determining set of allowed modes for {@link SelectionModule}.
+	 *
+	 * <h3>Modes</h3>
+	 * <ul>
+	 * <li>{@link #SINGLE}</li>
+	 * <li>{@link #MULTIPLE}</li>
+	 * </ul>
 	 */
 	@IntDef({SINGLE, MULTIPLE})
 	@Retention(RetentionPolicy.SOURCE)
@@ -100,14 +113,14 @@ public class SelectionModule extends AdapterModule {
 	/**
 	 * Mode that allows only a single item to be selected.
 	 *
-	 * @see #getSelectedId()
+	 * @see #getSelection()
 	 */
 	public static final int SINGLE = 0x01;
 
 	/**
 	 * Mode that allows multiple items to be selected.
 	 *
-	 * @see #getSelectedIds()
+	 * @see #getSelection()
 	 */
 	public static final int MULTIPLE = 0x02;
 
@@ -120,19 +133,14 @@ public class SelectionModule extends AdapterModule {
 	 */
 
 	/**
-	 * List containing all currently selected ids.
-	 */
-	private final List<Long> SELECTION = new ArrayList<>(10);
-
-	/**
 	 * Current selection mode of this module.
 	 */
 	private int mMode = SINGLE;
 
 	/**
-	 * Array with restored ids.
+	 * List which contains all currently selected ids.
 	 */
-	private long[] mRestoredIds;
+	private List<Long> mSelection;
 
 	/**
 	 * Constructors ================================================================================
@@ -144,29 +152,44 @@ public class SelectionModule extends AdapterModule {
 
 	/**
 	 * Sets the current selection mode of this module to the specified one.
+	 * <p>
+	 * <b>Note, that changing of selection mode also clears the current selection of this module
+	 * and notifies adapter.</b>
+	 * <p>
+	 * Default value: <b>{@link #SINGLE}</b>
 	 *
 	 * @param mode The desired selection mode. One of {@link #SINGLE} or {@link #MULTIPLE}.
 	 * @see #getMode()
+	 * @see #getSelection()
 	 */
 	public void setMode(@SelectionMode int mode) {
-		switch (mode) {
-			case SINGLE:
-			case MULTIPLE:
-				this.mMode = mode;
-				break;
+		if (mMode != mode) {
+			this.mMode = mode;
+			if (mSelection != null && !mSelection.isEmpty()) {
+				this.mSelection = null;
+				notifyAdapter();
+			}
 		}
 	}
 
 	/**
 	 * Returns the current selection mode of this module.
 	 *
-	 * @return Current selection mode (one of {@link #SINGLE}, {@link #MULTIPLE}) or {@link #SINGLE}
-	 * by default.
+	 * @return Current selection mode. One of {@link #SINGLE} or {@link #MULTIPLE}.
 	 * @see #setMode(int)
 	 */
 	@SelectionMode
 	public int getMode() {
 		return mMode;
+	}
+
+	/**
+	 * Asserts that this module is in {@link #MULTIPLE} selection mode, if not an exception is thrown.
+	 *
+	 * @throws IllegalStateException If the current selection mode is not {@link #MULTIPLE}.
+	 */
+	private void assertInMultipleSelectionModeOrThrow() {
+		if (mMode != MULTIPLE) throw new IllegalStateException("Not in MULTIPLE selection mode.");
 	}
 
 	/**
@@ -184,87 +207,60 @@ public class SelectionModule extends AdapterModule {
 	}
 
 	/**
-	 * Checks whether the specified <var>id</var> is currently selected or not.
-	 *
-	 * @param id The id of an item of which selection state to check.
-	 * @return {@code True} if item with the specified id is selected, {@code false} otherwise.
-	 * @see #setSelected(long, boolean)
-	 * @see #toggleSelection(long)
-	 */
-	public boolean isSelected(long id) {
-		this.ensureRestoredState();
-		return SELECTION.contains(id);
-	}
-
-	/**
 	 * Changes selection state of the specified <var>id</var> to the desired one and <b>notifies adapter</b>.
 	 *
 	 * @param id       The id of an item of which selection state to change.
-	 * @param selected New selection state.
+	 * @param selected New selection state. {@code True} to be selected, {@code false} otherwise,
+	 * @see #toggleSelection(long)
 	 * @see #selectRange(int, int)
 	 * @see #selectAll()
-	 * @see #toggleSelection(long)
 	 * @see #isAdapterNotificationEnabled()
 	 */
 	public void setSelected(long id, boolean selected) {
-		this.ensureRestoredState();
-		switch (mMode) {
-			case MULTIPLE:
-				break;
-			case SINGLE:
+		if (selected) {
+			if (mMode == SINGLE) {
 				clearSelection(false);
-				break;
+			}
+			select(id);
+		} else {
+			deselect(id);
 		}
-		if (selected) select(id);
-		else deselect(id);
 		notifyAdapter();
 	}
 
 	/**
-	 * Adds the specified <var>id</var> into a set of the currently selected ids.
-	 *
-	 * @param id The id to add into the selected ones.
-	 */
-	protected final void select(long id) {
-		if (!SELECTION.contains(id)) SELECTION.add(id);
-	}
-
-	/**
-	 * Removes the specified <var>id</var> form a set of the currently selected ids.
-	 *
-	 * @param id The id to remove from the selected ones.
-	 */
-	protected final void deselect(long id) {
-		SELECTION.remove(id);
-	}
-
-	/**
 	 * Same as {@link #selectRange(int, int)} with parameters {@code (0, ModuleAdapter.getItemCount())}.
+	 * <p>
+	 * <b>Note</b>, that calling of this method for mode other than {@link #MULTIPLE} will throw an
+	 * exception.
 	 *
+	 * @throws IllegalStateException If the current mode is not {@link #MULTIPLE}.
 	 * @see #setSelected(long, boolean)
 	 */
 	public void selectAll() {
-		this.ensureRestoredState();
-		this.checkActualModeFor(MULTIPLE, "select all");
+		assertAttachedToAdapterOrThrow();
 		selectRange(0, mAdapter.getItemCount());
 	}
 
 	/**
-	 * Selects id in the range {@code [startPosition, startPosition + count]} and <b>notifies adapter</b>.
+	 * Selects all ids in the {@code [startPosition, startPosition + count)} range and <b>notifies adapter</b>.
 	 * <p>
 	 * All previously selected ids will remain selected.
+	 * <p>
+	 * <b>Note</b>, that calling of this method for mode other than {@link #MULTIPLE} will throw an
+	 * exception.
 	 *
 	 * @param startPosition The position from which to start selection.
 	 * @param count         Count of items to select from the start position.
-	 * @throws IllegalStateException     If the current mode is not set to {@link #MULTIPLE}.
+	 * @throws IllegalStateException     If the current mode is not {@link #MULTIPLE}.
 	 * @throws IndexOutOfBoundsException If {@code startPosition + count > n}.
 	 * @see #selectAll()
 	 * @see #setSelected(long, boolean)
 	 * @see #isAdapterNotificationEnabled()
 	 */
 	public void selectRange(int startPosition, int count) {
-		this.ensureRestoredState();
-		this.checkActualModeFor(MULTIPLE, "select range");
+		assertInMultipleSelectionModeOrThrow();
+		assertAttachedToAdapterOrThrow();
 		// Check correct index.
 		final int n = mAdapter.getItemCount();
 		if (startPosition + count > n) {
@@ -278,41 +274,94 @@ public class SelectionModule extends AdapterModule {
 	}
 
 	/**
-	 * Deselects all currently selected positions and <b>notifies adapter</b>.
+	 * Sets a selection for this module and <b>notifies adapter</b>. The specified selection will
+	 * override any current selection of this module.
+	 *
+	 * @param selection The desired selection. May be {@code null} to clear the current selection.
+	 * @see #getSelection()
+	 * @see #isAdapterNotificationEnabled()
+	 */
+	public void setSelection(@Nullable List<Long> selection) {
+		this.mSelection = selection != null ? new ArrayList<>(selection) : null;
+	}
+
+	/**
+	 * Checks whether the specified <var>id</var> is currently selected or not.
+	 *
+	 * @param id The id of an item of which selection state to check.
+	 * @return {@code True} if item with the specified id is selected, {@code false} otherwise.
+	 * @see #setSelected(long, boolean)
+	 * @see #toggleSelection(long)
+	 */
+	public boolean isSelected(long id) {
+		return mSelection != null && mSelection.contains(id);
+	}
+
+	/**
+	 * Returns list containing ids that are at this time selected within this module.
+	 * <p>
+	 * In {@link #SINGLE} selection mode the returned list will contain maximum of 1 selected id,
+	 * in {@link #MULTIPLE} selection mode all selected ids will be contained in the returned list.
+	 *
+	 * @return {@link List} with selected ids or <b>immutable</b> empty list if there is no selection.
+	 */
+	@NonNull
+	public List<Long> getSelection() {
+		return mSelection != null ? new ArrayList<>(mSelection) : Collections.<Long>emptyList();
+	}
+
+	/**
+	 * Returns size of the current selection.
+	 *
+	 * @return Count of the currently selected ids.
+	 * @see #getSelection()
+	 */
+	public int getSelectionSize() {
+		return mSelection != null ? mSelection.size() : 0;
+	}
+
+	/**
+	 * Deselects all currently selected ids and <b>notifies adapter</b>.
 	 *
 	 * @see #clearSelectionInRange(int, int)
 	 * @see #isAdapterNotificationEnabled()
 	 */
 	public void clearSelection() {
-		this.ensureRestoredState();
 		clearSelection(true);
 	}
 
 	/**
-	 * Removes all ids form a set of the currently selected ids.
+	 * Removes all ids form the set of the currently selected ids.
 	 *
-	 * @param notify {@code True} to notify the currently attached adapter via {@link #notifyAdapter()},
+	 * @param notify {@code True} to notify the associated adapter via {@link #notifyAdapter()},
 	 *               {@code false} otherwise.
 	 */
 	protected final void clearSelection(boolean notify) {
-		SELECTION.clear();
-		if (notify) notifyAdapter();
+		if (mSelection != null) {
+			mSelection.clear();
+			if (notify) {
+				notifyAdapter();
+			}
+		}
 	}
 
 	/**
-	 * Deselects all currently selected ids in the range {@code [startPosition, startPosition + count]}
-	 * and <b>notifies adapter</b>.
+	 * Deselects all currently selected ids in the {@code [startPosition, startPosition + count)}
+	 * range and <b>notifies adapter</b>.
+	 * <p>
+	 * <b>Note</b>, that calling of this method for mode other than {@link #MULTIPLE} will throw an
+	 * exception.
 	 *
 	 * @param startPosition The position from which to start deselection.
 	 * @param count         Count of items to deselect from the start position.
-	 * @throws IllegalStateException     If the current mode is not set to {@link #MULTIPLE}.
+	 * @throws IllegalStateException     If the current mode is not {@link #MULTIPLE}.
 	 * @throws IndexOutOfBoundsException If {@code startPosition + count > n}.
 	 * @see #clearSelection()
 	 * @see #isAdapterNotificationEnabled()
 	 */
 	public void clearSelectionInRange(int startPosition, int count) {
-		this.ensureRestoredState();
-		this.checkActualModeFor(MULTIPLE, "clear selection in range");
+		assertInMultipleSelectionModeOrThrow();
+		assertAttachedToAdapterOrThrow();
 		// Check correct index.
 		final int n = mAdapter.getItemCount();
 		if (startPosition + count > n) {
@@ -326,148 +375,71 @@ public class SelectionModule extends AdapterModule {
 	}
 
 	/**
-	 * @return {@code True} whether there are some selected positions to save, {@code false}
-	 * otherwise.
+	 * Adds the specified <var>id</var> into the set of the currently selected ids. If there is already
+	 * same id presented, addition of the given one will be ignored.
+	 *
+	 * @param id The id to add into the selected ones.
+	 * @see #deselect(long)
+	 */
+	protected final void select(long id) {
+		if (mSelection == null) mSelection = new ArrayList<>(mMode == SINGLE ? 1 : 10);
+		if (!mSelection.contains(id)) mSelection.add(id);
+	}
+
+	/**
+	 * Removes the specified <var>id</var> form the set of the currently selected ids.
+	 *
+	 * @param id The id to remove from the selected ones.
+	 * @see #select(long)
+	 */
+	protected final void deselect(long id) {
+		if (mSelection != null) mSelection.remove(id);
+	}
+
+	/**
+	 * @return {@code True} whether this module have some selection to save, {@code false} otherwise.
 	 */
 	@Override
 	public boolean requiresStateSaving() {
-		return SELECTION.size() > 0;
+		return mSelection != null && mSelection.size() > 0;
 	}
 
 	/**
 	 */
 	@NonNull
 	@Override
-	protected Parcelable onSaveInstanceState() {
-		final SavedState state = new SavedState(super.onSaveInstanceState());
+	@CallSuper
+	public Parcelable saveInstanceState() {
+		final SavedState state = new SavedState(super.saveInstanceState());
 		state.mode = mMode;
-		state.selectedIds = selectionToArray();
+		if (mSelection != null && !mSelection.isEmpty()) {
+			final long[] selectionArray = new long[mSelection.size()];
+			for (int i = 0; i < mSelection.size(); i++) {
+				selectionArray[i] = mSelection.get(i);
+			}
+			state.selection = selectionArray;
+		}
 		return state;
 	}
 
 	/**
 	 */
 	@Override
-	protected void onRestoreInstanceState(@NonNull Parcelable savedState) {
+	@CallSuper
+	public void restoreInstanceState(@NonNull Parcelable savedState) {
 		if (!(savedState instanceof SavedState)) {
-			super.onRestoreInstanceState(savedState);
+			super.restoreInstanceState(savedState);
 			return;
 		}
-
 		final SavedState state = (SavedState) savedState;
-		super.onRestoreInstanceState(state.getSuperState());
+		super.restoreInstanceState(state.getSuperState());
 		this.mMode = state.mode;
-		this.mRestoredIds = state.selectedIds;
-		this.ensureRestoredState();
-	}
-
-	/**
-	 * Returns the array with the currently selected ids.
-	 *
-	 * @return {@link List} with ids that are at this time selected.
-	 * @see #getSelectedId()
-	 * @see #getSelectedIds()
-	 */
-	@NonNull
-	public List<Long> getSelection() {
-		this.ensureRestoredState();
-		return new ArrayList<>(SELECTION);
-	}
-
-	/**
-	 * Returns the current selection size.
-	 *
-	 * @return Count of the currently selected ids.
-	 */
-	public int getSelectionSize() {
-		this.ensureRestoredState();
-		return SELECTION.size();
-	}
-
-	/**
-	 * Returns the id that is at this time selected.
-	 *
-	 * @return Currently selected id or {@code -1} if there is no id selected at this time.
-	 * @throws IllegalStateException If the current mode is not set to {@link #SINGLE}.
-	 * @see #getSelectedIds()
-	 */
-	public long getSelectedId() {
-		this.ensureRestoredState();
-		this.checkActualModeFor(SINGLE, "obtain selected id");
-		return SELECTION.size() > 0 ? SELECTION.get(0) : -1;
-	}
-
-	/**
-	 * Returns an array with ids that are currently selected.
-	 *
-	 * @return Array with all currently selected ids.
-	 * @throws IllegalStateException If the current mode is not set to {@link #MULTIPLE}.
-	 * @see #getSelectedId()
-	 */
-	public long[] getSelectedIds() {
-		this.ensureRestoredState();
-		this.checkActualModeFor(MULTIPLE, "obtain selected ids");
-		return selectionToArray();
-	}
-
-	/**
-	 * Ensures that the state of this module is properly restored.
-	 *
-	 * @return {@code True} if state has been restored, {@code false} otherwise.
-	 */
-	private boolean ensureRestoredState() {
-		if (mRestoredIds != null) {
-			for (long id : mRestoredIds) {
-				SELECTION.add(id);
+		if (state.selection != null) {
+			this.mSelection = new ArrayList<>(state.selection.length);
+			for (long id : state.selection) {
+				mSelection.add(id);
 			}
-			this.mRestoredIds = null;
-			notifyAdapter();
-			return true;
 		}
-		return false;
-	}
-
-	/**
-	 * Converts the current selection list into array.
-	 *
-	 * @return Array with ids contained within the current selection.
-	 */
-	private long[] selectionToArray() {
-		final int n = SELECTION.size();
-		final long[] selectionArray = new long[n];
-		for (int i = 0; i < n; i++) {
-			selectionArray[i] = SELECTION.get(i);
-		}
-		return selectionArray;
-	}
-
-	/**
-	 * Check whether the current mode complies with the requested mode for the given action. If not
-	 * the IllegalStateException is thrown.
-	 *
-	 * @param requiredMode Flag of the required mode.
-	 * @param action       Action for which is this check performed.
-	 */
-	private void checkActualModeFor(int requiredMode, String action) {
-		if (mMode != requiredMode) {
-			throw new IllegalStateException("Can't " + action + ". Not in required(" + modeName(requiredMode) + ") mode.");
-		}
-	}
-
-	/**
-	 * Returns name for the given mode.
-	 *
-	 * @param mode Mode identifier.
-	 * @return Name of the requested mode.
-	 */
-	private static String modeName(int mode) {
-		switch (mode) {
-			case MULTIPLE:
-				return "MULTIPLE";
-			case SINGLE:
-				return "SINGLE";
-		}
-		return "";
 	}
 
 	/**
@@ -475,8 +447,8 @@ public class SelectionModule extends AdapterModule {
 	 */
 
 	/**
-	 * A {@link AdapterSavedState} implementation used to ensure that the state of
-	 * {@link SelectionModule} is properly saved.
+	 * An {@link AdapterSavedState} implementation used to ensure that the state of {@link SelectionModule}
+	 * is properly saved.
 	 *
 	 * @author Martin Albedinsky
 	 */
@@ -486,6 +458,7 @@ public class SelectionModule extends AdapterModule {
 		 * Creator used to create an instance or array of instances of SavedState from {@link Parcel}.
 		 */
 		public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+
 			/**
 			 */
 			@Override
@@ -507,14 +480,14 @@ public class SelectionModule extends AdapterModule {
 
 		/**
 		 */
-		private long[] selectedIds = {};
+		private long[] selection = {};
 
 		/**
 		 * Creates a new instance of SavedState with the given <var>superState</var> to allow chaining
-		 * of saved states in {@link #onSaveInstanceState()} and also in {@link #onRestoreInstanceState(Parcelable)}.
+		 * of saved states in {@link #saveInstanceState()} and also in {@link #restoreInstanceState(Parcelable)}.
 		 *
-		 * @param superState The super state obtained from {@code super.onSaveInstanceState()} within
-		 *                   {@code onSaveInstanceState()}.
+		 * @param superState The super state obtained from {@code super.saveInstanceState()} within
+		 *                   {@link #saveInstanceState()}.
 		 */
 		protected SavedState(@NonNull Parcelable superState) {
 			super(superState);
@@ -529,7 +502,7 @@ public class SelectionModule extends AdapterModule {
 		protected SavedState(@NonNull Parcel source) {
 			super(source);
 			this.mode = source.readInt();
-			this.selectedIds = source.createLongArray();
+			this.selection = source.createLongArray();
 		}
 
 		/**
@@ -538,7 +511,7 @@ public class SelectionModule extends AdapterModule {
 		public void writeToParcel(@NonNull Parcel dest, int flags) {
 			super.writeToParcel(dest, flags);
 			dest.writeInt(mode);
-			dest.writeLongArray(selectedIds);
+			dest.writeLongArray(selection);
 		}
 	}
 }

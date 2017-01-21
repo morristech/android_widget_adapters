@@ -34,5 +34,5 @@ android {
  * Library Module dependencies =====================================================================
  */
 dependencies {
-    // None.
+    compile 'universum.studios.android:widget-adapters-state:1.0.0@aar'
 }
