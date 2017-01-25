@@ -9,6 +9,22 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/library" />
+            <option value="$PROJECT_DIR$/library-core" />
+            <option value="$PROJECT_DIR$/library-list" />
+            <option value="$PROJECT_DIR$/library-list-base" />
+            <option value="$PROJECT_DIR$/library-list-simple" />
+            <option value="$PROJECT_DIR$/library-module" />
+            <option value="$PROJECT_DIR$/library-module-core" />
+            <option value="$PROJECT_DIR$/library-module-header" />
+            <option value="$PROJECT_DIR$/library-module-selection" />
+            <option value="$PROJECT_DIR$/library-recycler" />
+            <option value="$PROJECT_DIR$/library-recycler-base" />
+            <option value="$PROJECT_DIR$/library-recycler-simple" />
+            <option value="$PROJECT_DIR$/library-spinner" />
+            <option value="$PROJECT_DIR$/library-spinner-base" />
+            <option value="$PROJECT_DIR$/library-spinner-simple" />
+            <option value="$PROJECT_DIR$/library-state" />
+            <option value="$PROJECT_DIR$/library-wrapper" />
             <option value="$PROJECT_DIR$/samples" />
           </set>
         </option>

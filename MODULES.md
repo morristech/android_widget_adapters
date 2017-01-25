@@ -30,31 +30,6 @@ as usually.
 
     compile 'universum.studios.android:widget-adapters-state:1.0.0@aar'
 
-**[List](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/list)**
-
-    compile 'universum.studios.android:widget-adapters-list:1.0.0@aar'
-
-_depends on:_
-[widget-adapters-core](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/main),
-[widget-adapters-state](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/state)
-
-**[List-Base](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/list/base)**
-
-    compile 'universum.studios.android:widget-adapters-list-base:1.0.0@aar'
-
-_depends on:_
-[widget-adapters-core](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/main),
-[widget-adapters-state](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/state)
-
-**[List-Simple](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/list/simple)**
-
-    compile 'universum.studios.android:widget-adapters-list-simple:1.0.0@aar'
-
-_depends on:_
-[widget-adapters-core](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/main),
-[widget-adapters-state](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/state),
-[widget-adapters-list-base](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/list/base)
-
 **[Recycler](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/recycler)**
 
     compile 'universum.studios.android:widget-adapters-recycler:1.0.0@aar'
@@ -79,6 +54,31 @@ _depends on:_
 [widget-adapters-core](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/main),
 [widget-adapters-state](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/state),
 [widget-adapters-recycler-base](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/recycler/base)
+
+**[List](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/list)**
+
+    compile 'universum.studios.android:widget-adapters-list:1.0.0@aar'
+
+_depends on:_
+[widget-adapters-core](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/main),
+[widget-adapters-state](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/state)
+
+**[List-Base](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/list/base)**
+
+    compile 'universum.studios.android:widget-adapters-list-base:1.0.0@aar'
+
+_depends on:_
+[widget-adapters-core](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/main),
+[widget-adapters-state](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/state)
+
+**[List-Simple](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/list/simple)**
+
+    compile 'universum.studios.android:widget-adapters-list-simple:1.0.0@aar'
+
+_depends on:_
+[widget-adapters-core](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/main),
+[widget-adapters-state](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/state),
+[widget-adapters-list-base](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/list/base)
 
 **[Spinner](https://github.com/universum-studios/android_widget_adapters/tree/master/library/src/spinner)**
 

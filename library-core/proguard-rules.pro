@@ -16,6 +16,4 @@
 # See the License for the specific language governing permissions and limitations under the License.
 # ==================================================================================================
 ##
-# Gradle library properites.
-
-maven.pom.artifactId=widget-adapters
+# No rules are required.

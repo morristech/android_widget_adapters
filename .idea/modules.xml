@@ -4,6 +4,22 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/WidgetAdapters.iml" filepath="$PROJECT_DIR$/WidgetAdapters.iml" />
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-core/library-core.iml" filepath="$PROJECT_DIR$/library-core/library-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-list/library-list.iml" filepath="$PROJECT_DIR$/library-list/library-list.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-list-base/library-list-base.iml" filepath="$PROJECT_DIR$/library-list-base/library-list-base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-list-simple/library-list-simple.iml" filepath="$PROJECT_DIR$/library-list-simple/library-list-simple.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-module/library-module.iml" filepath="$PROJECT_DIR$/library-module/library-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-module-core/library-module-core.iml" filepath="$PROJECT_DIR$/library-module-core/library-module-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-module-header/library-module-header.iml" filepath="$PROJECT_DIR$/library-module-header/library-module-header.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-module-selection/library-module-selection.iml" filepath="$PROJECT_DIR$/library-module-selection/library-module-selection.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-recycler/library-recycler.iml" filepath="$PROJECT_DIR$/library-recycler/library-recycler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-recycler-base/library-recycler-base.iml" filepath="$PROJECT_DIR$/library-recycler-base/library-recycler-base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-recycler-simple/library-recycler-simple.iml" filepath="$PROJECT_DIR$/library-recycler-simple/library-recycler-simple.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-spinner/library-spinner.iml" filepath="$PROJECT_DIR$/library-spinner/library-spinner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-spinner-base/library-spinner-base.iml" filepath="$PROJECT_DIR$/library-spinner-base/library-spinner-base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-spinner-simple/library-spinner-simple.iml" filepath="$PROJECT_DIR$/library-spinner-simple/library-spinner-simple.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-state/library-state.iml" filepath="$PROJECT_DIR$/library-state/library-state.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-wrapper/library-wrapper.iml" filepath="$PROJECT_DIR$/library-wrapper/library-wrapper.iml" />
       <module fileurl="file://$PROJECT_DIR$/samples/samples.iml" filepath="$PROJECT_DIR$/samples/samples.iml" />
     </modules>
   </component>
