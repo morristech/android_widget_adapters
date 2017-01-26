@@ -19,6 +19,6 @@
  * =================================================================================================
  */
 -->
-<manifest package="universum.studios.android.widget.adapter">
+<manifest package="universum.studios.android.widget.adapter.core">
 	<application/>
 </manifest>
