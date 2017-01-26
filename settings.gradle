@@ -1,7 +1,7 @@
 // Gradle project settings. Specifies which modules to include into project.
 include ':library', ':samples'
 include ':library-core', ':library-state', ':library-wrapper'
-include ':library-recycler', ':library-recycler-base', ':library-recycler-simple'
-include ':library-list', ':library-list-base', ':library-list-simple'
-include ':library-spinner', ':library-spinner-base', ':library-spinner-simple'
-include ':library-module', ':library-module-core', ':library-module-header', ':library-module-selection'
+include ':library-recycler_group', ':library-recycler-base', ':library-recycler-simple'
+include ':library-list_group', ':library-list-base', ':library-list-simple'
+include ':library-spinner_group', ':library-spinner-base', ':library-spinner-simple'
+include ':library-module_group', ':library-module-core', ':library-module-header', ':library-module-selection'

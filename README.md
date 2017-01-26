@@ -1,4 +1,4 @@
-Android Widget Adapters
+Widget Adapters
 ===============
 
 ## Download ##
