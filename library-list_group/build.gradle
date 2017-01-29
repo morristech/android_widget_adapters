@@ -42,8 +42,8 @@ android {
 
     sourceSets {
         main.java.srcDirs = [
-                '../library-list/base/src/main/java',
-                '../library-list/simple/src/main/java'
+                '../library-list-base/src/main/java',
+                '../library-list-simple/src/main/java'
         ]
     }
 

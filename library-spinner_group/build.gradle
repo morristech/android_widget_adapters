@@ -42,8 +42,8 @@ android {
 
     sourceSets {
         main.java.srcDirs = [
-                '../library-spinner/base/src/main/java',
-                '../library-spinner/simple/src/main/java'
+                '../library-spinner-base/src/main/java',
+                '../library-spinner-simple/src/main/java'
         ]
     }
 
