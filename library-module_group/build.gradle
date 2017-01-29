@@ -41,11 +41,12 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs = [
+        release.java.srcDirs = [
                 '../library-module-core/src/main/java',
                 '../library-module-header/src/main/java',
                 '../library-module-selection/src/main/java'
         ]
+        debug.java.srcDirs = release.java.srcDirs
     }
 
     compileOptions {
@@ -62,7 +63,7 @@ repositories {
 }
 
 dependencies {
-    final String supportVersion = project.property('android.support.version')
+    def String supportVersion = project.property('android.support.version')
     /*
      * RELEASE DEPENDENCIES ------------------------------------------------------------------------
      */
