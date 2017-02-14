@@ -44,24 +44,27 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 /**
  * Library dependencies ============================================================================
  */
 repositories {
-    mavenLocal()
+    maven { url = '../artifacts/' }
 }
 
 dependencies {
-    def String supportVersion = project.property('android.support.version')
     /*
      * RELEASE DEPENDENCIES ------------------------------------------------------------------------
      */
-    compile 'com.android.support:support-annotations:' + supportVersion
-    compile 'com.android.support:recyclerview-v7:' + supportVersion
-    releaseCompile 'universum.studios.android:widget-adapters-core:' + project.property('library.version') + '@aar'
-    releaseCompile 'universum.studios.android:widget-adapters-state:' + project.property('library.version') + '@aar'
+    compile releaseDependencies.androidSupportAnnotations
+    compile releaseDependencies.androidSupportRecyclerViewV7
+    releaseCompile "universum.studios.android:widget-adapters-core:${libraryVersion}@aar"
+    releaseCompile "universum.studios.android:widget-adapters-state:${libraryVersion}@aar"
 
     /*
      * DEBUG DEPENDENCIES --------------------------------------------------------------------------
@@ -70,5 +73,5 @@ dependencies {
     debugCompile project(':library-state')
 }
 
-// Apply PUBLISH script.
-apply from: '../publish/publish.gradle'
+// Apply DEPLOY script.
+apply from: '../deploy/deploy.gradle'

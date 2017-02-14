@@ -1,17 +1,21 @@
 Widget Adapters
 ===============
 
-## Download ##
+[![Build Status](https://travis-ci.org/universum-studios/android_widget_adapters.svg?branch=master)](https://travis-ci.org/universum-studios/android_widget_adapters)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/89160b40625a463694bcb9cc8ffa64e6)](https://www.codacy.com/app/universum-studios/android_widget_adapters?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=universum-studios/android_widget_adapters&amp;utm_campaign=Badge_Grade)
 
-Download the latest **[release](https://github.com/universum-studios/android_widget_adapters/releases/tag/1.0.0 "Latest Releases page")** or **add as dependency** in your project via:
+## Download ##
+[![Bintray Badge](https://api.bintray.com/packages/universum-studios/android/universum.studios.android%3Awidget-adapters/images/download.svg)](https://bintray.com/universum-studios/android/universum.studios.android%3Awidget-adapters/_latestVersion)
+
+Download the latest **[release](https://github.com/universum-studios/android_widget_adapters/releases "Latest Releases page")** or **add as dependency** in your project via:
 
 ### Gradle ###
 
-    compile 'universum.studios.android:widget-adapters:1.0.0@aar'
+    compile 'universum.studios.android:widget-adapters:${DESIRED_VERSION}@aar'
 
 ## Compatibility ##
 
-Available from the **Android [API Level 9](http://developer.android.com/about/versions/android-2.3.html "See API highlights")**.
+Supported down to the **Android [API Level 9](http://developer.android.com/about/versions/android-2.3.html "See API highlights")**.
 
 ### Dependencies ###
 

@@ -2,10 +2,11 @@ Widget-Adapters-Spinner-Simple
 ===============
 
 ## Download ##
+[![Bintray Badge](https://api.bintray.com/packages/universum-studios/android/universum.studios.android%3Awidget-adapters/images/download.svg)](https://bintray.com/universum-studios/android/universum.studios.android%3Awidget-adapters/_latestVersion)
 
 ### Gradle ###
 
-    compile 'universum.studios.android:widget-adapters-spinner-simple:1.0.0@aar'
+    compile "universum.studios.android:widget-adapters-spinner-simple:${DESIRED_VERSION}@aar"
 
 _depends on:_
 [widget-adapters-core](https://github.com/universum-studios/android_widget_adapters/tree/master/library-core),
