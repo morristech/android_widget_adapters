@@ -34,15 +34,11 @@ import android.view.ViewGroup;
  * Extended version of {@link RecyclerView.Adapter} that provides API of
  * {@link DataSetAdapter}.
  *
- * @param <Item> Type of the item presented within a data set of a subclass of this BaseRecyclerAdapter.
- * @param <VH>   Type of the view holder used within a subclass of this BaseRecyclerAdapter.
+ * @param <I>  Type of the item presented within a data set of a subclass of this BaseRecyclerAdapter.
+ * @param <VH> Type of the view holder used within a subclass of this BaseRecyclerAdapter.
  * @author Martin Albedinsky
  */
-public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> implements DataSetAdapter<Item> {
-
-	/**
-	 * Interface ===================================================================================
-	 */
+public abstract class BaseRecyclerAdapter<I, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> implements DataSetAdapter<I> {
 
 	/**
 	 * Constants ===================================================================================
@@ -52,6 +48,10 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 	 * Log TAG.
 	 */
 	// private static final String TAG = "BaseRecyclerAdapter";
+
+	/**
+	 * Interface ===================================================================================
+	 */
 
 	/**
 	 * Static members ==============================================================================
@@ -79,7 +79,7 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 	/**
 	 * Data set handling data specified for this adapter.
 	 */
-	final AdapterDataSet<BaseRecyclerAdapter<Item, VH>, Item> mDataSet;
+	final AdapterDataSet<BaseRecyclerAdapter<I, VH>, I> mDataSet;
 
 	/**
 	 * Data observer used to notify data set change to registered {@link OnDataSetListener OnDataSetListeners}.
@@ -195,7 +195,7 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 	protected boolean notifyDataSetActionSelected(int action, int position, @Nullable Object payload) {
 		// Do not notify actions for invalid (out of bounds of the current data set) positions.
 		return position >= 0 && position < getItemCount() && (
-						onDataSetActionSelected(action, position, payload) ||
+				onDataSetActionSelected(action, position, payload) ||
 						mDataSet.notifyDataSetActionSelected(action, position, payload)
 		);
 	}
@@ -282,6 +282,7 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 	@Override
 	@CallSuper
 	public void restoreInstanceState(@NonNull Parcelable savedState) {
+		// Inheritance hierarchies may restore theirs state here.
 	}
 
 	/**

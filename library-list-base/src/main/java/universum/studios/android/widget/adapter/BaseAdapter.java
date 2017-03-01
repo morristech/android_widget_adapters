@@ -144,15 +144,11 @@ import android.view.ViewGroup;
  * }
  * </pre>
  *
- * @param <Item> Type of the item presented within a data set of a subclass of this BaseAdapter.
- * @param <VH>   Type of the view holder used within a subclass of this BaseAdapter.
+ * @param <I>  Type of the item presented within a data set of a subclass of this BaseAdapter.
+ * @param <VH> Type of the view holder used within a subclass of this BaseAdapter.
  * @author Martin Albedinsky
  */
-public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter implements DataSetAdapter<Item> {
-
-	/**
-	 * Interface ===================================================================================
-	 */
+public abstract class BaseAdapter<I, VH> extends android.widget.BaseAdapter implements DataSetAdapter<I> {
 
 	/**
 	 * Constants ===================================================================================
@@ -162,6 +158,10 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	 * Log TAG.
 	 */
 	// private static final String TAG = "BaseAdapter";
+
+	/**
+	 * Interface ===================================================================================
+	 */
 
 	/**
 	 * Static members ==============================================================================
@@ -189,7 +189,7 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	/**
 	 * Data set handling data specified for this adapter.
 	 */
-	final AdapterDataSet<BaseAdapter<Item, VH>, Item> mDataSet;
+	final AdapterDataSet<BaseAdapter<I, VH>, I> mDataSet;
 
 	/**
 	 * Item view type for the current {@link #getView(int, View, ViewGroup)} iteration.
@@ -286,7 +286,7 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	protected boolean notifyDataSetActionSelected(int action, int position, @Nullable Object payload) {
 		// Do not notify actions for invalid (out of bounds of the current data set) positions.
 		return position >= 0 && position < getItemCount() && (
-						onDataSetActionSelected(action, position, payload) ||
+				onDataSetActionSelected(action, position, payload) ||
 						mDataSet.notifyDataSetActionSelected(action, position, payload)
 		);
 	}
@@ -347,14 +347,14 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 		if (convertView == null) {
 			convertView = onCreateView(parent, position);
 			final Object holder = onCreateViewHolder(convertView, position);
-			if (holder != null) {
-				convertView.setTag(viewHolder = holder);
-			} else {
+			if (holder == null) {
 				viewHolder = convertView;
+			} else {
+				convertView.setTag(viewHolder = holder);
 			}
 		} else {
 			final Object holder = convertView.getTag();
-			viewHolder = holder != null ? holder : convertView;
+			viewHolder = holder == null ? convertView : holder;
 		}
 		ensureViewHolderPosition(viewHolder, position);
 		onBindViewHolder((VH) viewHolder, position);
@@ -464,6 +464,7 @@ public abstract class BaseAdapter<Item, VH> extends android.widget.BaseAdapter i
 	@Override
 	@CallSuper
 	public void restoreInstanceState(@NonNull Parcelable savedState) {
+		// Inheritance hierarchies may restore theirs state here.
 	}
 
 	/**

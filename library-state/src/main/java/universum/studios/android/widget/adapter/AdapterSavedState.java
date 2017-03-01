@@ -33,10 +33,6 @@ import android.view.View;
 public abstract class AdapterSavedState implements Parcelable {
 
 	/**
-	 * Interface ===================================================================================
-	 */
-
-	/**
 	 * Constants ===================================================================================
 	 */
 
@@ -44,6 +40,10 @@ public abstract class AdapterSavedState implements Parcelable {
 	 * Log TAG.
 	 */
 	// private static final String TAG = "AdapterSavedState";
+
+	/**
+	 * Interface ===================================================================================
+	 */
 
 	/**
 	 * Static members ==============================================================================
@@ -107,7 +107,7 @@ public abstract class AdapterSavedState implements Parcelable {
 	 * @param superState The state of the super class of the associated adapter.
 	 */
 	protected AdapterSavedState(@NonNull Parcelable superState) {
-		this.mSuperState = superState != EMPTY_STATE ? superState : null;
+		this.mSuperState = superState == EMPTY_STATE ? null : superState;
 	}
 
 	/**
@@ -118,7 +118,7 @@ public abstract class AdapterSavedState implements Parcelable {
 	 */
 	protected AdapterSavedState(@NonNull Parcel source) {
 		final Parcelable superState = source.readParcelable(AdapterSavedState.class.getClassLoader());
-		this.mSuperState = superState != null ? superState : EMPTY_STATE;
+		this.mSuperState = superState == null ? EMPTY_STATE : superState;
 	}
 
 	/**
@@ -140,7 +140,7 @@ public abstract class AdapterSavedState implements Parcelable {
 	 */
 	@NonNull
 	final public Parcelable getSuperState() {
-		return mSuperState != null ? mSuperState : EMPTY_STATE;
+		return mSuperState == null ? EMPTY_STATE : mSuperState;
 	}
 
 	/**

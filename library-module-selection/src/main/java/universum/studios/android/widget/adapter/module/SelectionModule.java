@@ -84,10 +84,6 @@ import universum.studios.android.widget.adapter.AdapterSavedState;
 public class SelectionModule extends AdapterModule {
 
 	/**
-	 * Interface ===================================================================================
-	 */
-
-	/**
 	 * Constants ===================================================================================
 	 */
 
@@ -95,6 +91,20 @@ public class SelectionModule extends AdapterModule {
 	 * Log TAG.
 	 */
 	// private static final String TAG = "SelectionModule";
+
+	/**
+	 * Mode that allows only a single item to be selected.
+	 *
+	 * @see #getSelection()
+	 */
+	public static final int SINGLE = 0x01;
+
+	/**
+	 * Mode that allows multiple items to be selected.
+	 *
+	 * @see #getSelection()
+	 */
+	public static final int MULTIPLE = 0x02;
 
 	/**
 	 * Defines an annotation for determining set of allowed modes for {@link SelectionModule}.
@@ -111,18 +121,8 @@ public class SelectionModule extends AdapterModule {
 	}
 
 	/**
-	 * Mode that allows only a single item to be selected.
-	 *
-	 * @see #getSelection()
+	 * Interface ===================================================================================
 	 */
-	public static final int SINGLE = 0x01;
-
-	/**
-	 * Mode that allows multiple items to be selected.
-	 *
-	 * @see #getSelection()
-	 */
-	public static final int MULTIPLE = 0x02;
 
 	/**
 	 * Static members ==============================================================================
@@ -282,7 +282,7 @@ public class SelectionModule extends AdapterModule {
 	 * @see #isAdapterNotificationEnabled()
 	 */
 	public void setSelection(@Nullable List<Long> selection) {
-		this.mSelection = selection != null ? new ArrayList<>(selection) : null;
+		this.mSelection = selection == null ? null : new ArrayList<>(selection);
 	}
 
 	/**
@@ -307,7 +307,7 @@ public class SelectionModule extends AdapterModule {
 	 */
 	@NonNull
 	public List<Long> getSelection() {
-		return mSelection != null ? new ArrayList<>(mSelection) : Collections.<Long>emptyList();
+		return mSelection == null ? Collections.<Long>emptyList() : new ArrayList<>(mSelection);
 	}
 
 	/**
@@ -317,7 +317,7 @@ public class SelectionModule extends AdapterModule {
 	 * @see #getSelection()
 	 */
 	public int getSelectionSize() {
-		return mSelection != null ? mSelection.size() : 0;
+		return mSelection == null ? 0 : mSelection.size();
 	}
 
 	/**

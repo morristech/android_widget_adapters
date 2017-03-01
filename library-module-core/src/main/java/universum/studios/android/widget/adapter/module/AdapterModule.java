@@ -105,6 +105,15 @@ import universum.studios.android.widget.adapter.AdapterSavedState;
 public abstract class AdapterModule {
 
 	/**
+	 * Constants ===================================================================================
+	 */
+
+	/**
+	 * Log TAG.
+	 */
+	// private static final String TAG = "AdapterModule";
+
+	/**
 	 * Interface ===================================================================================
 	 */
 
@@ -134,15 +143,6 @@ public abstract class AdapterModule {
 		 */
 		long getItemId(int position);
 	}
-
-	/**
-	 * Constants ===================================================================================
-	 */
-
-	/**
-	 * Log TAG.
-	 */
-	// private static final String TAG = "AdapterModule";
 
 	/**
 	 * Static members ==============================================================================
@@ -186,6 +186,8 @@ public abstract class AdapterModule {
 	 * @param adapter Instance of the adapter to which was this module just attached.
 	 */
 	protected void onAttachedToAdapter(@NonNull ModuleAdapter adapter) {
+		// Inheritance hierarchies may override this method in order to perform additional configuration
+		// due to attachment to the adapter.
 	}
 
 	/**
@@ -275,6 +277,7 @@ public abstract class AdapterModule {
 	 */
 	@CallSuper
 	void restoreInstanceState(@NonNull Parcelable savedState) {
+		// Inheritance hierarchies may restore theirs state here.
 	}
 
 	/**

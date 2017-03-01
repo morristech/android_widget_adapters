@@ -38,6 +38,15 @@ import java.util.List;
 public class AlphabeticHeaders extends HeadersModule<HeadersModule.SimpleHeader> {
 
 	/**
+	 * Constants ===================================================================================
+	 */
+
+	/**
+	 * Log TAG.
+	 */
+	// private static final String TAG = "AlphabeticHeaders";
+
+	/**
 	 * Interface ===================================================================================
 	 */
 
@@ -57,15 +66,6 @@ public class AlphabeticHeaders extends HeadersModule<HeadersModule.SimpleHeader>
 		@NonNull
 		CharSequence getText();
 	}
-
-	/**
-	 * Constants ===================================================================================
-	 */
-
-	/**
-	 * Log TAG.
-	 */
-	// private static final String TAG = "AlphabeticHeaders";
 
 	/**
 	 * Static members ==============================================================================

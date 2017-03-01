@@ -33,10 +33,10 @@ import android.support.annotation.Nullable;
  * Both these callbacks should be guarantied to be called by the associated adapter if this listener
  * is attached to it.
  *
- * @param <Adapter> Type of the adapter to which will be this data change listener attached.
+ * @param <A> Type of the adapter to which will be this data change listener attached.
  * @author Martin Albedinsky
  */
-public interface OnDataChangeListener<Adapter, Data> {
+public interface OnDataChangeListener<A, D> {
 
 	/**
 	 * Invoked whenever the specified <var>data</var> are about to be changed in the given <var>adapter</var>.
@@ -46,7 +46,7 @@ public interface OnDataChangeListener<Adapter, Data> {
 	 * @param adapter The adapter of which data are about to be changed.
 	 * @param data    The data to be changed. May be {@code null}.
 	 */
-	void onDataChange(@NonNull Adapter adapter, @Nullable Data data);
+	void onDataChange(@NonNull A adapter, @Nullable D data);
 
 	/**
 	 * Invoked after {@link #onDataChange(Object, Object)} callback has been fired and data change
@@ -57,5 +57,5 @@ public interface OnDataChangeListener<Adapter, Data> {
 	 * @param adapter The adapter where the data has been changed.
 	 * @param data    The changed data. May be {@code null}.
 	 */
-	void onDataChanged(@NonNull Adapter adapter, @Nullable Data data);
+	void onDataChanged(@NonNull A adapter, @Nullable D data);
 }

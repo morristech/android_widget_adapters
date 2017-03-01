@@ -37,15 +37,11 @@ import java.util.List;
  * and {@link #onBindViewHolder(RecyclerView.ViewHolder, int)} methods are required to be implemented
  * to take a full advantage of this adapter class.
  *
- * @param <Item> Type of the item presented within a data set of a subclass of this SimpleRecyclerAdapter.
- * @param <VH>   Type of the view holder used within a subclass of this SimpleRecyclerAdapter.
+ * @param <I>  Type of the item presented within a data set of a subclass of this SimpleRecyclerAdapter.
+ * @param <VH> Type of the view holder used within a subclass of this SimpleRecyclerAdapter.
  * @author Martin Albedinsky
  */
-public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHolder> extends BaseRecyclerAdapter<Item, VH> implements ItemsAdapter<Item> {
-
-	/**
-	 * Interface ===================================================================================
-	 */
+public abstract class SimpleRecyclerAdapter<I, VH extends RecyclerView.ViewHolder> extends BaseRecyclerAdapter<I, VH> implements ItemsAdapter<I> {
 
 	/**
 	 * Constants ===================================================================================
@@ -55,6 +51,10 @@ public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHo
 	 * Log TAG.
 	 */
 	// private static final String TAG = "SimpleRecyclerFragment";
+
+	/**
+	 * Interface ===================================================================================
+	 */
 
 	/**
 	 * Static members ==============================================================================
@@ -83,7 +83,7 @@ public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHo
 	 * Same as {@link #SimpleRecyclerAdapter(Context, List)} for array of initial <var>items</var>
 	 * data set.
 	 */
-	public SimpleRecyclerAdapter(@NonNull Context context, @NonNull Item[] items) {
+	public SimpleRecyclerAdapter(@NonNull Context context, @NonNull I[] items) {
 		this(context, Arrays.asList(items));
 	}
 
@@ -94,7 +94,7 @@ public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHo
 	 * @param context Context in which will be this adapter used.
 	 * @param items   List of items to be used as initial data set for this adapter.
 	 */
-	public SimpleRecyclerAdapter(@NonNull Context context, @NonNull List<Item> items) {
+	public SimpleRecyclerAdapter(@NonNull Context context, @NonNull List<I> items) {
 		super(context);
 		mDataSet.attachData(items);
 	}
@@ -106,7 +106,7 @@ public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHo
 	/**
 	 */
 	@Override
-	public void changeItems(@Nullable List<Item> items) {
+	public void changeItems(@Nullable List<I> items) {
 		swapItems(items);
 	}
 
@@ -114,18 +114,18 @@ public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHo
 	 */
 	@Nullable
 	@Override
-	public List<Item> swapItems(@Nullable List<Item> items) {
-		final List<Item> oldData = mDataSet.getData();
-		if (items != null) {
-			mDataSet.notifyDataChange(items);
-			mDataSet.attachData(items);
-			if (!onItemsChange(items, oldData)) {
-				notifyDataSetChanged();
-			}
-		} else {
+	public List<I> swapItems(@Nullable List<I> items) {
+		final List<I> oldData = mDataSet.getData();
+		if (items == null) {
 			mDataSet.notifyDataChange(null);
 			mDataSet.attachData(null);
 			if (!onItemsChange(null, oldData)) {
+				notifyDataSetChanged();
+			}
+		} else {
+			mDataSet.notifyDataChange(items);
+			mDataSet.attachData(items);
+			if (!onItemsChange(items, oldData)) {
 				notifyDataSetChanged();
 			}
 		}
@@ -145,7 +145,7 @@ public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHo
 	 * @return {@code True} if change has been handled and appropriate callbacks has been fired to
 	 * registered observers, {@code false} if default {@link #notifyDataSetChanged()} should be invoked.
 	 */
-	protected boolean onItemsChange(@Nullable List<Item> newItems, @Nullable List<Item> oldItems) {
+	protected boolean onItemsChange(@Nullable List<I> newItems, @Nullable List<I> oldItems) {
 		return false;
 	}
 
@@ -153,7 +153,7 @@ public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHo
 	 */
 	@Nullable
 	@Override
-	public List<Item> getItems() {
+	public List<I> getItems() {
 		return mDataSet.getData();
 	}
 
@@ -175,7 +175,7 @@ public abstract class SimpleRecyclerAdapter<Item, VH extends RecyclerView.ViewHo
 	 */
 	@NonNull
 	@Override
-	public Item getItem(int position) {
+	public I getItem(int position) {
 		return mDataSet.getItem(position);
 	}
 
