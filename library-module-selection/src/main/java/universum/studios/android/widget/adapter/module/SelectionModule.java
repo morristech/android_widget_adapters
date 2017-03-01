@@ -121,6 +121,16 @@ public class SelectionModule extends AdapterModule {
 	}
 
 	/**
+	 * Initial capacity for list containing selected ids in <b>single</b> selection mode.
+	 */
+	private static final int INITIAL_CAPACITY_SINGLE = 1;
+
+	/**
+	 * Initial capacity for list containing selected ids in <b>multi</b> selection mode.
+	 */
+	private static final int INITIAL_CAPACITY_MULTI = 10;
+
+	/**
 	 * Interface ===================================================================================
 	 */
 
@@ -382,7 +392,7 @@ public class SelectionModule extends AdapterModule {
 	 * @see #deselect(long)
 	 */
 	protected final void select(long id) {
-		if (mSelection == null) mSelection = new ArrayList<>(mMode == SINGLE ? 1 : 10);
+		if (mSelection == null) mSelection = new ArrayList<>(mMode == SINGLE ? INITIAL_CAPACITY_SINGLE : INITIAL_CAPACITY_MULTI);
 		if (!mSelection.contains(id)) mSelection.add(id);
 	}
 
