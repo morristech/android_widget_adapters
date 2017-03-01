@@ -84,10 +84,6 @@ import universum.studios.android.widget.adapter.AdapterSavedState;
 public class SelectionModule extends AdapterModule {
 
 	/**
-	 * Interface ===================================================================================
-	 */
-
-	/**
 	 * Constants ===================================================================================
 	 */
 
@@ -95,6 +91,20 @@ public class SelectionModule extends AdapterModule {
 	 * Log TAG.
 	 */
 	// private static final String TAG = "SelectionModule";
+
+	/**
+	 * Mode that allows only a single item to be selected.
+	 *
+	 * @see #getSelection()
+	 */
+	public static final int SINGLE = 0x01;
+
+	/**
+	 * Mode that allows multiple items to be selected.
+	 *
+	 * @see #getSelection()
+	 */
+	public static final int MULTIPLE = 0x02;
 
 	/**
 	 * Defines an annotation for determining set of allowed modes for {@link SelectionModule}.
@@ -111,18 +121,18 @@ public class SelectionModule extends AdapterModule {
 	}
 
 	/**
-	 * Mode that allows only a single item to be selected.
-	 *
-	 * @see #getSelection()
+	 * Initial capacity for list containing selected ids in <b>single</b> selection mode.
 	 */
-	public static final int SINGLE = 0x01;
+	private static final int INITIAL_CAPACITY_SINGLE = 1;
 
 	/**
-	 * Mode that allows multiple items to be selected.
-	 *
-	 * @see #getSelection()
+	 * Initial capacity for list containing selected ids in <b>multi</b> selection mode.
 	 */
-	public static final int MULTIPLE = 0x02;
+	private static final int INITIAL_CAPACITY_MULTI = 10;
+
+	/**
+	 * Interface ===================================================================================
+	 */
 
 	/**
 	 * Static members ==============================================================================
@@ -282,7 +292,7 @@ public class SelectionModule extends AdapterModule {
 	 * @see #isAdapterNotificationEnabled()
 	 */
 	public void setSelection(@Nullable List<Long> selection) {
-		this.mSelection = selection != null ? new ArrayList<>(selection) : null;
+		this.mSelection = selection == null ? null : new ArrayList<>(selection);
 	}
 
 	/**
@@ -307,7 +317,7 @@ public class SelectionModule extends AdapterModule {
 	 */
 	@NonNull
 	public List<Long> getSelection() {
-		return mSelection != null ? new ArrayList<>(mSelection) : Collections.<Long>emptyList();
+		return mSelection == null ? Collections.<Long>emptyList() : new ArrayList<>(mSelection);
 	}
 
 	/**
@@ -317,7 +327,7 @@ public class SelectionModule extends AdapterModule {
 	 * @see #getSelection()
 	 */
 	public int getSelectionSize() {
-		return mSelection != null ? mSelection.size() : 0;
+		return mSelection == null ? 0 : mSelection.size();
 	}
 
 	/**
@@ -382,7 +392,7 @@ public class SelectionModule extends AdapterModule {
 	 * @see #deselect(long)
 	 */
 	protected final void select(long id) {
-		if (mSelection == null) mSelection = new ArrayList<>(mMode == SINGLE ? 1 : 10);
+		if (mSelection == null) mSelection = new ArrayList<>(mMode == SINGLE ? INITIAL_CAPACITY_SINGLE : INITIAL_CAPACITY_MULTI);
 		if (!mSelection.contains(id)) mSelection.add(id);
 	}
 
@@ -401,7 +411,7 @@ public class SelectionModule extends AdapterModule {
 	 */
 	@Override
 	public boolean requiresStateSaving() {
-		return mSelection != null && mSelection.size() > 0;
+		return mSelection != null && !mSelection.isEmpty();
 	}
 
 	/**
@@ -436,7 +446,7 @@ public class SelectionModule extends AdapterModule {
 		this.mMode = state.mode;
 		if (state.selection != null) {
 			this.mSelection = new ArrayList<>(state.selection.length);
-			for (long id : state.selection) {
+			for (final long id : state.selection) {
 				mSelection.add(id);
 			}
 		}

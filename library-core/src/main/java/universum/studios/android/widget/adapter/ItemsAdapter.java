@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author Martin Albedinsky
  */
-public interface ItemsAdapter<Item> extends DataSetAdapter<Item> {
+public interface ItemsAdapter<I> extends DataSetAdapter<I> {
 
 	/**
 	 * Same as {@link #swapItems(List)} without returning the old data set of items.
@@ -36,7 +36,7 @@ public interface ItemsAdapter<Item> extends DataSetAdapter<Item> {
 	 * @param items The desired items to be changed. May be {@code null} to clear the current ones.
 	 * @see #getItems()
 	 */
-	void changeItems(@Nullable List<Item> items);
+	void changeItems(@Nullable List<I> items);
 
 	/**
 	 * Changes items data set of this adapter and returns the old items data set.
@@ -47,7 +47,7 @@ public interface ItemsAdapter<Item> extends DataSetAdapter<Item> {
 	 * @see #getItems()
 	 */
 	@Nullable
-	List<Item> swapItems(@Nullable List<Item> items);
+	List<I> swapItems(@Nullable List<I> items);
 
 	/**
 	 * Returns the current items data set of this adapter.
@@ -58,5 +58,5 @@ public interface ItemsAdapter<Item> extends DataSetAdapter<Item> {
 	 * @see #swapItems(List)
 	 */
 	@Nullable
-	List<Item> getItems();
+	List<I> getItems();
 }

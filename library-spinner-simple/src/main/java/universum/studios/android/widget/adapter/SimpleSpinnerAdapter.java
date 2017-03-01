@@ -37,16 +37,12 @@ import java.util.List;
  * view are the same, if not also {@link #onCreateDropDownView(android.view.ViewGroup, int)} and
  * {@link #onBindDropDownViewHolder(Object, int)} need to be implemented as well.
  *
- * @param <Item> Type of the item presented within a data set of a subclass of this SimpleSpinnerAdapter.
- * @param <VH>   Type of the view holder used within a subclass of this SimpleSpinnerAdapter.
- * @param <DVH>  Type of the drop down view holder used within a subclass of this SimpleSpinnerAdapter.
+ * @param <I>   Type of the item presented within a data set of a subclass of this SimpleSpinnerAdapter.
+ * @param <VH>  Type of the view holder used within a subclass of this SimpleSpinnerAdapter.
+ * @param <DVH> Type of the drop down view holder used within a subclass of this SimpleSpinnerAdapter.
  * @author Martin Albedinsky
  */
-public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAdapter<Item, VH, DVH> implements ItemsAdapter<Item> {
-
-	/**
-	 * Interface ===================================================================================
-	 */
+public abstract class SimpleSpinnerAdapter<I, VH, DVH> extends BaseSpinnerAdapter<I, VH, DVH> implements ItemsAdapter<I> {
 
 	/**
 	 * Constants ===================================================================================
@@ -56,6 +52,10 @@ public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAda
 	 * Log TAG.
 	 */
 	// private static final String TAG = "SimpleSpinnerAdapter";
+
+	/**
+	 * Interface ===================================================================================
+	 */
 
 	/**
 	 * Static members ==============================================================================
@@ -84,7 +84,7 @@ public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAda
 	 * Same as {@link #SimpleSpinnerAdapter(Context, List)} for array of initial <var>items</var>
 	 * data set.
 	 */
-	public SimpleSpinnerAdapter(@NonNull Context context, @NonNull Item[] items) {
+	public SimpleSpinnerAdapter(@NonNull Context context, @NonNull I[] items) {
 		this(context, Arrays.asList(items));
 	}
 
@@ -95,7 +95,7 @@ public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAda
 	 * @param context Context in which will be this adapter used.
 	 * @param items   List of items to be used as initial data set for this adapter.
 	 */
-	public SimpleSpinnerAdapter(@NonNull Context context, @NonNull List<Item> items) {
+	public SimpleSpinnerAdapter(@NonNull Context context, @NonNull List<I> items) {
 		super(context);
 		mDataSet.attachData(items);
 	}
@@ -107,7 +107,7 @@ public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAda
 	/**
 	 */
 	@Override
-	public void changeItems(@Nullable List<Item> items) {
+	public void changeItems(@Nullable List<I> items) {
 		swapItems(items);
 	}
 
@@ -115,18 +115,18 @@ public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAda
 	 */
 	@Nullable
 	@Override
-	public List<Item> swapItems(@Nullable List<Item> items) {
-		final List<Item> oldData = mDataSet.getData();
-		if (items != null) {
-			mDataSet.notifyDataChange(items);
-			mDataSet.attachData(items);
-			if (!onItemsChange(items, oldData)) {
-				notifyDataSetChanged();
-			}
-		} else {
+	public List<I> swapItems(@Nullable List<I> items) {
+		final List<I> oldData = mDataSet.getData();
+		if (items == null) {
 			mDataSet.notifyDataChange(null);
 			mDataSet.attachData(null);
 			if (!onItemsChange(null, oldData)) {
+				notifyDataSetChanged();
+			}
+		} else {
+			mDataSet.notifyDataChange(items);
+			mDataSet.attachData(items);
+			if (!onItemsChange(items, oldData)) {
 				notifyDataSetChanged();
 			}
 		}
@@ -146,7 +146,7 @@ public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAda
 	 * @return {@code True} if change has been handled and appropriate callbacks has been fired to
 	 * registered observers, {@code false} if default {@link #notifyDataSetChanged()} should be invoked.
 	 */
-	protected boolean onItemsChange(@Nullable List<Item> newItems, @Nullable List<Item> oldItems) {
+	protected boolean onItemsChange(@Nullable List<I> newItems, @Nullable List<I> oldItems) {
 		return false;
 	}
 
@@ -154,7 +154,7 @@ public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAda
 	 */
 	@Nullable
 	@Override
-	public List<Item> getItems() {
+	public List<I> getItems() {
 		return mDataSet.getData();
 	}
 
@@ -176,7 +176,7 @@ public abstract class SimpleSpinnerAdapter<Item, VH, DVH> extends BaseSpinnerAda
 	 */
 	@NonNull
 	@Override
-	public Item getItem(int position) {
+	public I getItem(int position) {
 		return mDataSet.getItem(position);
 	}
 

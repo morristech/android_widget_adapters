@@ -25,10 +25,10 @@ import android.support.annotation.Nullable;
  * Listener which receives callback about selected action within adapter's data set for a specific
  * position.
  *
- * @param <Adapter> Type of the Adapter to which will be this data set action listener attached.
+ * @param <A> Type of the Adapter to which will be this data set action listener attached.
  * @author Martin Albedinsky
  */
-public interface OnDataSetActionListener<Adapter> {
+public interface OnDataSetActionListener<A> {
 
 	/**
 	 * Invoked whenever the specified <var>action</var> was selected for the specified <var>position</var>
@@ -43,5 +43,5 @@ public interface OnDataSetActionListener<Adapter> {
 	 *                 payload has been specified.
 	 * @return {@code True} if the action has been handled, {@code false} otherwise.
 	 */
-	boolean onDataSetActionSelected(@NonNull Adapter adapter, int action, int position, long id, @Nullable Object payload);
+	boolean onDataSetActionSelected(@NonNull A adapter, int action, int position, long id, @Nullable Object payload);
 }

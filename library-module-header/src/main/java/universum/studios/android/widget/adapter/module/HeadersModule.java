@@ -100,6 +100,15 @@ import android.widget.TextView;
 public abstract class HeadersModule<H extends HeadersModule.Header> extends AdapterModule {
 
 	/**
+	 * Constants ===================================================================================
+	 */
+
+	/**
+	 * Log TAG.
+	 */
+	private static final String TAG = "HeadersModule";
+
+	/**
 	 * Interface ===================================================================================
 	 */
 
@@ -118,15 +127,6 @@ public abstract class HeadersModule<H extends HeadersModule.Header> extends Adap
 		@NonNull
 		CharSequence getText();
 	}
-
-	/**
-	 * Constants ===================================================================================
-	 */
-
-	/**
-	 * Log TAG.
-	 */
-	private static final String TAG = "HeadersModule";
 
 	/**
 	 * Static members ==============================================================================
@@ -347,10 +347,10 @@ public abstract class HeadersModule<H extends HeadersModule.Header> extends Adap
 	public void bindViewHolder(@NonNull Object viewHolder, int position) {
 		if (viewHolder instanceof TextView) {
 			final Header header = getHeader(position);
-			if (header != null) {
-				((TextView) viewHolder).setText(header.getText());
-			} else {
+			if (header == null) {
 				Log.e(TAG, "Invalid header at position(" + position + ").");
+			} else {
+				((TextView) viewHolder).setText(header.getText());
 			}
 		}
 	}

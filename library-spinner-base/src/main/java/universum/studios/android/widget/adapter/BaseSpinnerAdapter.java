@@ -31,16 +31,12 @@ import android.view.ViewGroup;
  * stored whenever {@link #getView(int, View, ViewGroup)} is called. The selected item position may
  * be obtained via {@link #getSelectedItemPosition()}.
  *
- * @param <Item> Type of the item presented within a data set of a subclass of this BaseSpinnerAdapter.
- * @param <VH>   Type of the view holder used within a subclass of this BaseSpinnerAdapter.
- * @param <DVH>  Type of the drop down view holder used within a subclass of this BaseSpinnerAdapter.
+ * @param <I>   Type of the item presented within a data set of a subclass of this BaseSpinnerAdapter.
+ * @param <VH>  Type of the view holder used within a subclass of this BaseSpinnerAdapter.
+ * @param <DVH> Type of the drop down view holder used within a subclass of this BaseSpinnerAdapter.
  * @author Martin Albedinsky
  */
-public abstract class BaseSpinnerAdapter<Item, VH, DVH> extends BaseAdapter<Item, VH> {
-
-	/**
-	 * Interface ===================================================================================
-	 */
+public abstract class BaseSpinnerAdapter<I, VH, DVH> extends BaseAdapter<I, VH> {
 
 	/**
 	 * Constants ===================================================================================
@@ -50,6 +46,10 @@ public abstract class BaseSpinnerAdapter<Item, VH, DVH> extends BaseAdapter<Item
 	 * Log TAG.
 	 */
 	// private static final String TAG = "BaseSpinnerAdapter";
+
+	/**
+	 * Interface ===================================================================================
+	 */
 
 	/**
 	 * Static members ==============================================================================
@@ -88,7 +88,7 @@ public abstract class BaseSpinnerAdapter<Item, VH, DVH> extends BaseAdapter<Item
 	 * @see #getSelectedItemPosition()
 	 */
 	@NonNull
-	public Item getSelectedItem() {
+	public I getSelectedItem() {
 		return getItem(mSelectedPosition);
 	}
 
@@ -117,22 +117,23 @@ public abstract class BaseSpinnerAdapter<Item, VH, DVH> extends BaseAdapter<Item
 	@Override
 	@SuppressWarnings("unchecked")
 	public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+		View view = convertView;
 		Object viewHolder;
-		if (convertView == null) {
-			convertView = onCreateDropDownView(parent, position);
-			final Object holder = onCreateDropDownViewHolder(convertView, position);
-			if (holder != null) {
-				convertView.setTag(viewHolder = holder);
+		if (view == null) {
+			view = onCreateDropDownView(parent, position);
+			final Object holder = onCreateDropDownViewHolder(view, position);
+			if (holder == null) {
+				viewHolder = view;
 			} else {
-				viewHolder = convertView;
+				view.setTag(viewHolder = holder);
 			}
 		} else {
-			final Object holder = convertView.getTag();
-			viewHolder = holder != null ? holder : convertView;
+			final Object holder = view.getTag();
+			viewHolder = holder == null ? view : holder;
 		}
 		ensureViewHolderPosition(viewHolder, position);
 		onBindDropDownViewHolder((DVH) viewHolder, position);
-		return convertView;
+		return view;
 	}
 
 	/**
@@ -175,7 +176,7 @@ public abstract class BaseSpinnerAdapter<Item, VH, DVH> extends BaseAdapter<Item
 	}
 
 	/**
-	 * This implementation by default invokes {@link #onUpdateViewHolder(Object, Item, int)} with
+	 * This implementation by default invokes {@link #onUpdateViewHolder(Object, I, int)} with
 	 * item at the current selected position.
 	 *
 	 * @see #getSelectedItemPosition()
@@ -213,7 +214,7 @@ public abstract class BaseSpinnerAdapter<Item, VH, DVH> extends BaseAdapter<Item
 	 * @param item       Item from the adapter's data set at the specified position.
 	 * @param position   Position of the item from the current data set of which view holder to update.
 	 */
-	protected abstract void onUpdateViewHolder(@NonNull DVH viewHolder, @NonNull Item item, int position);
+	protected abstract void onUpdateViewHolder(@NonNull DVH viewHolder, @NonNull I item, int position);
 
 	/**
 	 * Inner classes ===============================================================================
