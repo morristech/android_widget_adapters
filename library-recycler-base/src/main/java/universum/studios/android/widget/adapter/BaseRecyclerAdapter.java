@@ -96,6 +96,7 @@ public abstract class BaseRecyclerAdapter<I, VH extends RecyclerView.ViewHolder>
 	 * @param context Context in which will be this adapter used.
 	 */
 	public BaseRecyclerAdapter(@NonNull Context context) {
+		super();
 		this.mContext = context;
 		this.mLayoutInflater = LayoutInflater.from(context);
 		this.mResources = context.getResources();

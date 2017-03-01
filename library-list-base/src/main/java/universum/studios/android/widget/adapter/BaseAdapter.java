@@ -206,6 +206,7 @@ public abstract class BaseAdapter<I, VH> extends android.widget.BaseAdapter impl
 	 * @param context Context in which will be this adapter used.
 	 */
 	public BaseAdapter(@NonNull Context context) {
+		super();
 		this.mContext = context;
 		this.mLayoutInflater = LayoutInflater.from(context);
 		this.mResources = context.getResources();
@@ -342,23 +343,24 @@ public abstract class BaseAdapter<I, VH> extends android.widget.BaseAdapter impl
 	@Override
 	@SuppressWarnings("unchecked")
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+		View view = convertView;
 		Object viewHolder;
 		this.mCurrentViewType = getItemViewType(position);
-		if (convertView == null) {
-			convertView = onCreateView(parent, position);
-			final Object holder = onCreateViewHolder(convertView, position);
+		if (view == null) {
+			view = onCreateView(parent, position);
+			final Object holder = onCreateViewHolder(view, position);
 			if (holder == null) {
-				viewHolder = convertView;
+				viewHolder = view;
 			} else {
-				convertView.setTag(viewHolder = holder);
+				view.setTag(viewHolder = holder);
 			}
 		} else {
-			final Object holder = convertView.getTag();
-			viewHolder = holder == null ? convertView : holder;
+			final Object holder = view.getTag();
+			viewHolder = holder == null ? view : holder;
 		}
 		ensureViewHolderPosition(viewHolder, position);
 		onBindViewHolder((VH) viewHolder, position);
-		return convertView;
+		return view;
 	}
 
 	/**

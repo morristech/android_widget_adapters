@@ -35,7 +35,7 @@ public final class AdaptersConfig {
 	 * Flag indicating whether the debug output for the Widget Adapters library trough log-cat is
 	 * enabled or not.
 	 */
-	public static boolean DEBUG_LOG_ENABLED;
+	public static boolean DEBUG_LOG_ENABLED = false;
 
 	/**
 	 */

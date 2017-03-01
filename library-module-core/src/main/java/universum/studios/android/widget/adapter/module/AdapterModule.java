@@ -193,11 +193,11 @@ public abstract class AdapterModule {
 	/**
 	 * Asserts that this module is attached to its associated adapter, if not an exception is thrown.
 	 *
-	 * @throws NullPointerException If this module is not attached to any adapter.
+	 * @throws IllegalStateException If this module is not attached to any adapter.
 	 * @see #attachToAdapter(ModuleAdapter)
 	 */
 	protected final void assertAttachedToAdapterOrThrow() {
-		if (mAdapter == null) throw new NullPointerException("Not attached to adapter.");
+		if (mAdapter == null) throw new IllegalStateException("Not attached to adapter.");
 	}
 
 	/**
