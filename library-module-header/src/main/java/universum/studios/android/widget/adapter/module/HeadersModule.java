@@ -100,6 +100,15 @@ import android.widget.TextView;
 public abstract class HeadersModule<H extends HeadersModule.Header> extends AdapterModule {
 
 	/**
+	 * Constants ===================================================================================
+	 */
+
+	/**
+	 * Log TAG.
+	 */
+	private static final String TAG = "HeadersModule";
+
+	/**
 	 * Interface ===================================================================================
 	 */
 
@@ -118,15 +127,6 @@ public abstract class HeadersModule<H extends HeadersModule.Header> extends Adap
 		@NonNull
 		CharSequence getText();
 	}
-
-	/**
-	 * Constants ===================================================================================
-	 */
-
-	/**
-	 * Log TAG.
-	 */
-	private static final String TAG = "HeadersModule";
 
 	/**
 	 * Static members ==============================================================================

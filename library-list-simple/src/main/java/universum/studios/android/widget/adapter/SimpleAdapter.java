@@ -35,15 +35,11 @@ import java.util.List;
  * and {@link #onBindViewHolder(Object, int)} methods are required to be implemented to take a full
  * advantage of this adapter class.
  *
- * @param <Item> Type of the item presented within a data set of a subclass of this SimpleAdapter.
- * @param <VH>   Type of the view holder used within a subclass of this SimpleAdapter.
+ * @param <I>  Type of the item presented within a data set of a subclass of this SimpleAdapter.
+ * @param <VH> Type of the view holder used within a subclass of this SimpleAdapter.
  * @author Martin Albedinsky
  */
-public abstract class SimpleAdapter<Item, VH> extends BaseAdapter<Item, VH> implements ItemsAdapter<Item> {
-
-	/**
-	 * Interface ===================================================================================
-	 */
+public abstract class SimpleAdapter<I, VH> extends BaseAdapter<I, VH> implements ItemsAdapter<I> {
 
 	/**
 	 * Constants ===================================================================================
@@ -53,6 +49,10 @@ public abstract class SimpleAdapter<Item, VH> extends BaseAdapter<Item, VH> impl
 	 * Log TAG.
 	 */
 	// private static final String TAG = "SimpleAdapter";
+
+	/**
+	 * Interface ===================================================================================
+	 */
 
 	/**
 	 * Static members ==============================================================================
@@ -80,7 +80,7 @@ public abstract class SimpleAdapter<Item, VH> extends BaseAdapter<Item, VH> impl
 	/**
 	 * Same as {@link #SimpleAdapter(Context, List)} for array of initial <var>items</var> data set.
 	 */
-	public SimpleAdapter(@NonNull Context context, @NonNull Item[] items) {
+	public SimpleAdapter(@NonNull Context context, @NonNull I[] items) {
 		this(context, Arrays.asList(items));
 	}
 
@@ -90,7 +90,7 @@ public abstract class SimpleAdapter<Item, VH> extends BaseAdapter<Item, VH> impl
 	 * @param context Context in which will be this adapter used.
 	 * @param items   List of items to be used as initial data set for this adapter.
 	 */
-	public SimpleAdapter(@NonNull Context context, @NonNull List<Item> items) {
+	public SimpleAdapter(@NonNull Context context, @NonNull List<I> items) {
 		super(context);
 		mDataSet.attachData(items);
 	}
@@ -102,7 +102,7 @@ public abstract class SimpleAdapter<Item, VH> extends BaseAdapter<Item, VH> impl
 	/**
 	 */
 	@Override
-	public void changeItems(@Nullable List<Item> items) {
+	public void changeItems(@Nullable List<I> items) {
 		swapItems(items);
 	}
 
@@ -110,18 +110,18 @@ public abstract class SimpleAdapter<Item, VH> extends BaseAdapter<Item, VH> impl
 	 */
 	@Nullable
 	@Override
-	public List<Item> swapItems(@Nullable List<Item> items) {
-		final List<Item> oldData = mDataSet.getData();
-		if (items != null) {
-			mDataSet.notifyDataChange(items);
-			mDataSet.attachData(items);
-			if (!onItemsChange(items, oldData)) {
-				notifyDataSetChanged();
-			}
-		} else {
+	public List<I> swapItems(@Nullable List<I> items) {
+		final List<I> oldData = mDataSet.getData();
+		if (items == null) {
 			mDataSet.notifyDataChange(null);
 			mDataSet.attachData(null);
 			if (!onItemsChange(null, oldData)) {
+				notifyDataSetChanged();
+			}
+		} else {
+			mDataSet.notifyDataChange(items);
+			mDataSet.attachData(items);
+			if (!onItemsChange(items, oldData)) {
 				notifyDataSetChanged();
 			}
 		}
@@ -141,7 +141,7 @@ public abstract class SimpleAdapter<Item, VH> extends BaseAdapter<Item, VH> impl
 	 * @return {@code True} if change has been handled and appropriate callbacks has been fired to
 	 * registered observers, {@code false} if default {@link #notifyDataSetChanged()} should be invoked.
 	 */
-	protected boolean onItemsChange(@Nullable List<Item> newItems, @Nullable List<Item> oldItems) {
+	protected boolean onItemsChange(@Nullable List<I> newItems, @Nullable List<I> oldItems) {
 		return false;
 	}
 
@@ -149,7 +149,7 @@ public abstract class SimpleAdapter<Item, VH> extends BaseAdapter<Item, VH> impl
 	 */
 	@Nullable
 	@Override
-	public List<Item> getItems() {
+	public List<I> getItems() {
 		return mDataSet.getData();
 	}
 
@@ -171,7 +171,7 @@ public abstract class SimpleAdapter<Item, VH> extends BaseAdapter<Item, VH> impl
 	 */
 	@NonNull
 	@Override
-	public Item getItem(int position) {
+	public I getItem(int position) {
 		return mDataSet.getItem(position);
 	}
 

@@ -30,14 +30,10 @@ import java.util.List;
  * A {@link DataSet} implementation that may be used to wrap a set of items and use it as data
  * set in adapters.
  *
- * @param <Adapter> Type of the adapter where this data set will be used.
+ * @param <A> Type of the adapter where this data set will be used.
  * @author Martin Albedinsky
  */
-final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implements DataSet<Item> {
-
-	/**
-	 * Interface ===================================================================================
-	 */
+final class AdapterDataSet<A extends DataSetAdapter<I>, I> implements DataSet<I> {
 
 	/**
 	 * Constants ===================================================================================
@@ -47,19 +43,6 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 * Log TAG.
 	 */
 	// private static final String TAG = "AdapterDataSet";
-
-	/**
-	 * Defines an annotation for determining set of flags that may be used for listeners related
-	 * flagging.
-	 */
-	@IntDef(flag = true, value = {
-			LISTENER_DATA_CHANGE,
-			LISTENER_DATA_SET,
-			LISTENER_DATA_SET_ACTION
-	})
-	@Retention(RetentionPolicy.SOURCE)
-	public @interface Listener {
-	}
 
 	/**
 	 * Flag used to identify {@link OnDataChangeListener}.
@@ -77,24 +60,22 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	static final int LISTENER_DATA_SET_ACTION = 0x00000001 << 2;
 
 	/**
+	 * Defines an annotation for determining set of flags that may be used for listeners related
+	 * flagging.
+	 */
+	@IntDef(flag = true, value = {
+			LISTENER_DATA_CHANGE,
+			LISTENER_DATA_SET,
+			LISTENER_DATA_SET_ACTION
+	})
+	@Retention(RetentionPolicy.SOURCE)
+	public @interface Listener {
+	}
+
+	/**
 	 * Flag grouping all listener flags defined by {@link Listener @Listener} annotation.
 	 */
 	private static final int LISTENER_ALL = LISTENER_DATA_CHANGE | LISTENER_DATA_SET | LISTENER_DATA_SET_ACTION;
-
-	/**
-	 * Defines an annotation for determining set of flags that may be used for listener callbacks
-	 * related flagging.
-	 */
-	@IntDef(flag = true, value = {
-			CALLBACK_DATA_CHANGE,
-			CALLBACK_DATA_CHANGED,
-			CALLBACK_DATA_SET_CHANGED,
-			CALLBACK_DATA_SET_INVALIDATED,
-			CALLBACK_DATA_SET_ACTION_SELECTED
-	})
-	@Retention(RetentionPolicy.SOURCE)
-	public @interface ListenerCallback {
-	}
 
 	/**
 	 * Flag used to identify {@link OnDataChangeListener#onDataChange(Object, Object)} callback.
@@ -123,12 +104,31 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	static final int CALLBACK_DATA_SET_ACTION_SELECTED = 0x00000001 << 4;
 
 	/**
+	 * Defines an annotation for determining set of flags that may be used for listener callbacks
+	 * related flagging.
+	 */
+	@IntDef(flag = true, value = {
+			CALLBACK_DATA_CHANGE,
+			CALLBACK_DATA_CHANGED,
+			CALLBACK_DATA_SET_CHANGED,
+			CALLBACK_DATA_SET_INVALIDATED,
+			CALLBACK_DATA_SET_ACTION_SELECTED
+	})
+	@Retention(RetentionPolicy.SOURCE)
+	public @interface ListenerCallback {
+	}
+
+	/**
 	 * Flag grouping all listener callback flags defined by {@link ListenerCallback @ListenerCallback}
 	 * annotation.
 	 */
 	private static final int CALLBACK_ALL = CALLBACK_DATA_CHANGE | CALLBACK_DATA_CHANGED |
 			CALLBACK_DATA_SET_CHANGED | CALLBACK_DATA_SET_INVALIDATED |
 			CALLBACK_DATA_SET_ACTION_SELECTED;
+
+	/**
+	 * Interface ===================================================================================
+	 */
 
 	/**
 	 * Static members ==============================================================================
@@ -141,7 +141,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	/**
 	 * Adapter to which is this data set attached.
 	 */
-	private final Adapter mAdapter;
+	private final A mAdapter;
 
 	/**
 	 * List with registered data change listeners.
@@ -161,7 +161,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	/**
 	 * Data attached to this data set.
 	 */
-	private List<Item> mData;
+	private List<I> mData;
 
 	/**
 	 * Listener flags determining which listeners are enabled to be notified.
@@ -182,7 +182,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 *
 	 * @param adapter The adapter where the new data set will be used.
 	 */
-	AdapterDataSet(Adapter adapter) {
+	AdapterDataSet(A adapter) {
 		this.mAdapter = adapter;
 	}
 
@@ -371,8 +371,8 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 * were no data attached.
 	 * @see #getData()
 	 */
-	List<Item> attachData(List<Item> data) {
-		final List<Item> oldData = mData;
+	List<I> attachData(List<I> data) {
+		final List<I> oldData = mData;
 		this.mData = data;
 		return oldData;
 	}
@@ -382,7 +382,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 *
 	 * @return Current data or {@code null} if there was no data attached yet.
 	 */
-	List<Item> getData() {
+	List<I> getData() {
 		return mData;
 	}
 
@@ -397,7 +397,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	 */
 	@Override
 	public int getItemCount() {
-		return mData != null ? mData.size() : 0;
+		return mData == null ? 0 : mData.size();
 	}
 
 	/**
@@ -412,7 +412,7 @@ final class AdapterDataSet<Adapter extends DataSetAdapter<Item>, Item> implement
 	@NonNull
 	@Override
 	@SuppressWarnings({"unchecked", "ConstantConditions"})
-	public Item getItem(int position) {
+	public I getItem(int position) {
 		if (!hasItemAt(position)) {
 			throw new IndexOutOfBoundsException(
 					"Requested item at invalid position(" + position + "). " +

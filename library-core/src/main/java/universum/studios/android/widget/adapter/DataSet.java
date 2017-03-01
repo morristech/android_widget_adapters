@@ -23,10 +23,10 @@ import android.support.annotation.NonNull;
 /**
  * Interface specifying API for data sets that contain a simple set of items.
  *
- * @param <Item> Item model that represents data structure of the data provided by this data set.
+ * @param <I> Item model that represents data structure of the data provided by this data set.
  * @author Martin Albedinsky
  */
-public interface DataSet<Item> {
+public interface DataSet<I> {
 
 	/**
 	 * Constants ===================================================================================
@@ -139,7 +139,7 @@ public interface DataSet<Item> {
 	 * @see #getItemId(int)
 	 */
 	@NonNull
-	Item getItem(int position);
+	I getItem(int position);
 
 	/**
 	 * Returns the ID of the item at the specified <var>position</var>.
