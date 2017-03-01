@@ -227,6 +227,13 @@ public abstract class BaseRecyclerAdapter<Item, VH extends RecyclerView.ViewHold
 	/**
 	 */
 	@Override
+	public boolean hasItemAt(int position) {
+		return position >= 0 && position < getItemCount();
+	}
+
+	/**
+	 */
+	@Override
 	public long getItemId(int position) {
 		return position;
 	}
