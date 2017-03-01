@@ -36,4 +36,10 @@ public final class AdaptersConfig {
 	 * enabled or not.
 	 */
 	public static boolean DEBUG_LOG_ENABLED = false;
+
+	/**
+	 */
+	private AdaptersConfig() {
+		// Creation of instances of this class is not publicly allowed.
+	}
 }

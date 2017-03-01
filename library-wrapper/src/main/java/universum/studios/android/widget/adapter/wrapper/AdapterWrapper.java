@@ -34,10 +34,6 @@ import android.widget.WrapperListAdapter;
 public class AdapterWrapper implements WrapperListAdapter {
 
 	/**
-	 * Interface ===================================================================================
-	 */
-
-	/**
 	 * Constants ===================================================================================
 	 */
 
@@ -45,6 +41,10 @@ public class AdapterWrapper implements WrapperListAdapter {
 	 * Log TAG.
 	 */
 	// private static final String TAG = "AdapterWrapper";
+
+	/**
+	 * Interface ===================================================================================
+	 */
 
 	/**
 	 * Static members ==============================================================================
@@ -110,7 +110,7 @@ public class AdapterWrapper implements WrapperListAdapter {
 	 */
 	@Override
 	public int getCount() {
-		return mAdapter != null ? mAdapter.getCount() : 0;
+		return mAdapter == null ? 0 : mAdapter.getCount();
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class AdapterWrapper implements WrapperListAdapter {
 	@Nullable
 	@Override
 	public Object getItem(int position) {
-		return mAdapter != null ? mAdapter.getItem(position) : null;
+		return mAdapter == null ? null : mAdapter.getItem(position);
 	}
 
 	/**
@@ -132,28 +132,28 @@ public class AdapterWrapper implements WrapperListAdapter {
 	 */
 	@Override
 	public long getItemId(int position) {
-		return mAdapter != null ? mAdapter.getItemId(position) : -1;
+		return mAdapter == null ? -1 : mAdapter.getItemId(position);
 	}
 
 	/**
 	 */
 	@Override
 	public int getViewTypeCount() {
-		return mAdapter != null ? mAdapter.getViewTypeCount() : 0;
+		return mAdapter == null ? 0 : mAdapter.getViewTypeCount();
 	}
 
 	/**
 	 */
 	@Override
 	public int getItemViewType(int position) {
-		return mAdapter != null ? mAdapter.getItemViewType(position) : 0;
+		return mAdapter == null ? 0 : mAdapter.getItemViewType(position);
 	}
 
 	/**
 	 */
 	@Override
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-		return mAdapter != null ? mAdapter.getView(position, convertView, parent) : null;
+		return mAdapter == null ? null : mAdapter.getView(position, convertView, parent);
 	}
 
 	/**

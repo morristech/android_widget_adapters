@@ -167,7 +167,7 @@ public final class SelectionModuleTest extends ContextBaseTest {
 		mModule.selectRange(0, 1);
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalStateException.class)
 	public void testSelectRangeWithoutAttachedAdapter() {
 		final SelectionModule module = new SelectionModule();
 		module.setMode(SelectionModule.MULTIPLE);
@@ -179,7 +179,7 @@ public final class SelectionModuleTest extends ContextBaseTest {
 		mModule.clearSelectionInRange(0, 1);
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalStateException.class)
 	public void testClearSelectionInRangeWithoutAttachedAdapter() {
 		final SelectionModule module = new SelectionModule();
 		module.setMode(SelectionModule.MULTIPLE);

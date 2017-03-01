@@ -24,10 +24,10 @@ import android.support.annotation.NonNull;
 /**
  * A convenience interface specifying common API for adapters with data set.
  *
- * @param <Item> Model that represents a data structure of the adapter's data set.
+ * @param <I> Model that represents a data structure of the adapter's data set.
  * @author Martin Albedinsky
  */
-public interface DataSetAdapter<Item> extends DataSet<Item> {
+public interface DataSetAdapter<I> extends DataSet<I> {
 
 	/**
 	 * Returns a boolean flag indicating whether an item at the specified <var>position</var> is
