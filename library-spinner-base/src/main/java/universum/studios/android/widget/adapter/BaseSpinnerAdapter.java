@@ -117,22 +117,23 @@ public abstract class BaseSpinnerAdapter<I, VH, DVH> extends BaseAdapter<I, VH> 
 	@Override
 	@SuppressWarnings("unchecked")
 	public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+		View view = convertView;
 		Object viewHolder;
-		if (convertView == null) {
-			convertView = onCreateDropDownView(parent, position);
-			final Object holder = onCreateDropDownViewHolder(convertView, position);
+		if (view == null) {
+			view = onCreateDropDownView(parent, position);
+			final Object holder = onCreateDropDownViewHolder(view, position);
 			if (holder == null) {
-				viewHolder = convertView;
+				viewHolder = view;
 			} else {
-				convertView.setTag(viewHolder = holder);
+				view.setTag(viewHolder = holder);
 			}
 		} else {
-			final Object holder = convertView.getTag();
-			viewHolder = holder == null ? convertView : holder;
+			final Object holder = view.getTag();
+			viewHolder = holder == null ? view : holder;
 		}
 		ensureViewHolderPosition(viewHolder, position);
 		onBindDropDownViewHolder((DVH) viewHolder, position);
-		return convertView;
+		return view;
 	}
 
 	/**

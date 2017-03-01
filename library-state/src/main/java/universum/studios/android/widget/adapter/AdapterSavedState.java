@@ -107,7 +107,7 @@ public abstract class AdapterSavedState implements Parcelable {
 	 * @param superState The state of the super class of the associated adapter.
 	 */
 	protected AdapterSavedState(@NonNull Parcelable superState) {
-		this.mSuperState = superState == EMPTY_STATE ? null : superState;
+		this.mSuperState = EMPTY_STATE.equals(superState) ? null : superState;
 	}
 
 	/**

@@ -238,7 +238,7 @@ final class AdapterDataSet<A extends DataSetAdapter<I>, I> implements DataSet<I>
 			return;
 		}
 		if (mDataChangeListeners != null && !mDataChangeListeners.isEmpty()) {
-			for (OnDataChangeListener listener : mDataChangeListeners) {
+			for (final OnDataChangeListener listener : mDataChangeListeners) {
 				listener.onDataChange(mAdapter, data);
 			}
 		}
@@ -257,7 +257,7 @@ final class AdapterDataSet<A extends DataSetAdapter<I>, I> implements DataSet<I>
 			return;
 		}
 		if (mDataChangeListeners != null && !mDataChangeListeners.isEmpty()) {
-			for (OnDataChangeListener listener : mDataChangeListeners) {
+			for (final OnDataChangeListener listener : mDataChangeListeners) {
 				listener.onDataChanged(mAdapter, data);
 			}
 		}
@@ -290,7 +290,7 @@ final class AdapterDataSet<A extends DataSetAdapter<I>, I> implements DataSet<I>
 			return;
 		}
 		if (mDataSetListeners != null && !mDataSetListeners.isEmpty()) {
-			for (OnDataSetListener listener : mDataSetListeners) {
+			for (final OnDataSetListener listener : mDataSetListeners) {
 				listener.onDataSetChanged(mAdapter);
 			}
 		}
@@ -308,7 +308,7 @@ final class AdapterDataSet<A extends DataSetAdapter<I>, I> implements DataSet<I>
 			return;
 		}
 		if (mDataSetListeners != null && !mDataSetListeners.isEmpty()) {
-			for (OnDataSetListener listener : mDataSetListeners) {
+			for (final OnDataSetListener listener : mDataSetListeners) {
 				listener.onDataSetInvalidated(mAdapter);
 			}
 		}
@@ -346,7 +346,7 @@ final class AdapterDataSet<A extends DataSetAdapter<I>, I> implements DataSet<I>
 			return false;
 		}
 		if (mDataSetActionListeners != null && !mDataSetActionListeners.isEmpty()) {
-			for (OnDataSetActionListener listener : mDataSetActionListeners) {
+			for (final OnDataSetActionListener listener : mDataSetActionListeners) {
 				if (listener.onDataSetActionSelected(mAdapter, action, position, getItemId(position), payload)) {
 					return true;
 				}

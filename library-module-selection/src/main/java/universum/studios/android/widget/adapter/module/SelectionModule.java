@@ -401,7 +401,7 @@ public class SelectionModule extends AdapterModule {
 	 */
 	@Override
 	public boolean requiresStateSaving() {
-		return mSelection != null && mSelection.size() > 0;
+		return mSelection != null && !mSelection.isEmpty();
 	}
 
 	/**
@@ -436,7 +436,7 @@ public class SelectionModule extends AdapterModule {
 		this.mMode = state.mode;
 		if (state.selection != null) {
 			this.mSelection = new ArrayList<>(state.selection.length);
-			for (long id : state.selection) {
+			for (final long id : state.selection) {
 				mSelection.add(id);
 			}
 		}
