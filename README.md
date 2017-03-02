@@ -1,7 +1,7 @@
 Widget Adapters
 ===============
 
-[![Build Status](https://travis-ci.org/universum-studios/android_widget_adapters.svg?branch=develop)](https://travis-ci.org/universum-studios/android_widget_adapters)
+[![Build Status](https://travis-ci.org/universum-studios/android_widget_adapters.svg?branch=master)](https://travis-ci.org/universum-studios/android_widget_adapters)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/89160b40625a463694bcb9cc8ffa64e6)](https://www.codacy.com/app/universum-studios/android_widget_adapters?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=universum-studios/android_widget_adapters&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/89160b40625a463694bcb9cc8ffa64e6)](https://www.codacy.com/app/universum-studios/android_widget_adapters?utm_source=github.com&utm_medium=referral&utm_content=universum-studios/android_widget_adapters&utm_campaign=Badge_Coverage)
 
